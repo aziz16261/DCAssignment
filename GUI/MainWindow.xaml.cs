@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Console1;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,9 +22,34 @@ namespace GUI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DataServerInterface foob;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            ChannelFactory<DataServerInterface> foobFactory;
+            NetTcpBinding tcp = new NetTcpBinding();
+            //Set the URL and create the connection!
+            string URL = "net.tcp://localhost:8100/ChatServer";
+            foobFactory = new ChannelFactory<DataServerInterface>(tcp, URL);
+            foob = foobFactory.CreateChannel();
+        }
+
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            string username = NBox.Text;
+            string password = PBox.Password;
+
+            if (foob.CheckAccount(username, password) == true)
+            {
+                MessageBox.Show("Login successful!");
+            }
+
+            else if (foob.CheckAccount(username, password) == false)
+            {
+                MessageBox.Show("Login failed. Please check your credentials.");
+            }
         }
     }
 }
