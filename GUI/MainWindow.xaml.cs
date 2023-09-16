@@ -40,14 +40,14 @@ namespace GUI
         {
             string username = NBox.Text;
 
-            if (foob.CheckAccount(username) == false)
+            if (foob.CheckAccount(username) == true)
             {
-                MessageBox.Show("Login successful!");
+                NBox.Text=("Username already exists.");
             }
 
-            else if (foob.CheckAccount(username) == true)
+            else
             {
-                MessageBox.Show("Username already exists.");
+                Username.Text = ("Currently logged in as: ") + username;
             }
         }
     }
