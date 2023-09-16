@@ -47,7 +47,7 @@ namespace GUI
 
             else if (foob.CheckAccount(username) == true)
             {
-                MessageBox.Show("Login failed. Please enter another username.");
+                MessageBox.Show("Username already exists.");
             }
         }
     }

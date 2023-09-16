@@ -12,6 +12,7 @@ namespace Console1
     public interface DataServerInterface
     {
         [OperationContract]
+        [FaultContract(typeof(ServerException))]
         bool CheckAccount(String username);
     }
 }
