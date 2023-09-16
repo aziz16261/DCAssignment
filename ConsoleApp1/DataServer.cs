@@ -18,19 +18,20 @@ namespace Console1
             database = new DatabaseClass();
         }
 
-        public bool CheckAccount(string username, string password)
+        public bool CheckAccount(string username)
         {
-
             List<DatabaseStorage.DataStruct> dataStructList = database.GetDataStructList();
 
             foreach (var data in dataStructList)
             {
-                if (data.AcctUsername == username && data.AcctPassword == password)
+                if (data.AcctUsername == username)
                 {
-                    return true; // The account was found
+                    return true; // The account exists 
                 }
             }
-            return false; // The account was not found
+
+            database.AddUser(username);
+            return false; // The account does not exist
         }
     }
 }

@@ -12,6 +12,6 @@ namespace Console1
     public interface DataServerInterface
     {
         [OperationContract]
-        bool CheckAccount(String username, String password);
+        bool CheckAccount(String username);
     }
 }

@@ -15,18 +15,26 @@ namespace DatabaseLib
             dataStruct = new List<DatabaseStorage.DataStruct>();
         }
 
-        public void AddUser(string username, string password) //adding a user to the database
+        public void AddUser(string username)
         {
-            DatabaseStorage.DataStruct data = new DatabaseStorage.DataStruct
+            // Check if the username already exists
+            if (!dataStruct.Any(data => data.AcctUsername == username))
             {
-                AcctUsername = username,
-                AcctPassword = password
-            };
+                DatabaseStorage.DataStruct data = new DatabaseStorage.DataStruct
+                {
+                    AcctUsername = username,
+                };
 
-            dataStruct.Add(data);
+                dataStruct.Add(data);
+            }
+
+            else
+            {
+                
+            }
         }
 
-        public List<DatabaseStorage.DataStruct> GetDataStructList() //getting the list of users
+            public List<DatabaseStorage.DataStruct> GetDataStructList() //getting the list of users
         {
             return dataStruct;
         }

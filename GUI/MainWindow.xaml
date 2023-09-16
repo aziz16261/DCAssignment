@@ -8,8 +8,8 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button x:Name="LoginButton" Content="Log in!" HorizontalAlignment="Center" Margin="0,255,0,0" VerticalAlignment="Top" Height="47" Width="138" RenderTransformOrigin="0.075,0.061" Click="LoginButton_Click"/>
-        <PasswordBox x:Name="PBox" HorizontalAlignment="Left" Margin="193,180,0,0" VerticalAlignment="Top" Width="442" Height="37"/>
-        <TextBox x:Name="NBox" HorizontalAlignment="Left" Margin="193,109,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="442" Height="36"/>
+        <TextBox x:Name="NBox" HorizontalAlignment="Left" Margin="193,172,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="442" Height="36"/>
+        <TextBlock HorizontalAlignment="Left" Margin="193,146,0,0" TextWrapping="Wrap" Text="username" VerticalAlignment="Top" Height="21" Width="63"/>
 
     </Grid>
 </Window>

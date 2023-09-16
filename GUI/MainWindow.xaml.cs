@@ -39,16 +39,15 @@ namespace GUI
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string username = NBox.Text;
-            string password = PBox.Password;
 
-            if (foob.CheckAccount(username, password) == true)
+            if (foob.CheckAccount(username) == false)
             {
                 MessageBox.Show("Login successful!");
             }
 
-            else if (foob.CheckAccount(username, password) == false)
+            else if (foob.CheckAccount(username) == true)
             {
-                MessageBox.Show("Login failed. Please check your credentials.");
+                MessageBox.Show("Login failed. Please enter another username.");
             }
         }
     }

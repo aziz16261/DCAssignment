@@ -11,11 +11,9 @@ namespace DatabaseLib
         public class DataStruct
         {
             public String AcctUsername; 
-            public String AcctPassword;
 
             public DataStruct()
             {
-                AcctPassword = "";
                 AcctUsername = "";
             }
         }
