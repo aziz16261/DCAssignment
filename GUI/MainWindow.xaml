@@ -27,9 +27,9 @@
         </TextBox>
         <TextBlock HorizontalAlignment="Center" Margin="0,33,0,0" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" Height="22" Width="64" RenderTransformOrigin="-0.102,0.323"/>
         <TextBlock HorizontalAlignment="Left" Margin="575,35,0,0" TextWrapping="Wrap" Text="IP" VerticalAlignment="Top" Height="22" Width="64" RenderTransformOrigin="-0.102,0.323"/>
-        <TextBox x:Name="chatBox" HorizontalAlignment="Left" Height="284" Margin="209,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="581"/>
-        <TextBox x:Name="MessageBox" TextWrapping="Wrap" Margin="209,363,121,10"/>
-        <Button x:Name="LogoutButton" Content="Log Out!" HorizontalAlignment="Left" Margin="103,74,0,0" VerticalAlignment="Top" Height="48" Width="83" RenderTransformOrigin="0.755,1.161"/>
+        <TextBox x:Name="chatBox" HorizontalAlignment="Left" Height="272" Margin="303,86,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="487"/>
+        <TextBox x:Name="MessageTextBox" TextWrapping="Wrap" Margin="303,363,121,10"/>
+        <Button x:Name="LogoutButton" Content="Log Out!" HorizontalAlignment="Left" Margin="103,74,0,0" VerticalAlignment="Top" Height="48" Width="83" RenderTransformOrigin="0.755,1.161" Click="LogoutButton_Click"/>
         <Button x:Name="SendBox" Content="Send!" HorizontalAlignment="Left" Margin="684,363,0,0" VerticalAlignment="Top" Height="43" Width="90"/>
         <Button x:Name="createChatRoom_btn" Content="Create Chat &#xD;&#xA;     Room&#xD;&#xA;" HorizontalAlignment="Left" Margin="10,177,0,0" VerticalAlignment="Top" Height="40" Width="176" Click="Button_Click"/>
         <TextBox x:Name="roomName_txt" HorizontalAlignment="Left" Margin="10,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="176" Height="27" RenderTransformOrigin="0.5,0.5">
@@ -50,5 +50,10 @@
                 </GridView>
             </ListView.View>
         </ListView>
+        <TextBlock x:Name="CurrentRoom" HorizontalAlignment="Left" Margin="303,61,0,0" TextWrapping="Wrap" Text="CurrentRoom" VerticalAlignment="Top"/>
+        <GroupBox x:Name="UsersInChatRoom" Header="UsersInChatRoom" Margin="191,86,502,123">
+        <ListBox x:Name="UsersInRoom" Margin="204,82,502,123" ItemsSource="{Binding UsersInChatRoom}">
+        </ListBox>
+        </GroupBox>
     </Grid>
 </Window>

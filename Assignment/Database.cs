@@ -28,7 +28,6 @@ namespace DatabaseLib
 
                 dataStruct.Add(data);
             }
-
             else
             {
                 throw new FaultException("Username already exists");

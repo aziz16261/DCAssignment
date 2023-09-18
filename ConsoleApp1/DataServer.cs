@@ -5,6 +5,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using Assignment;
 
 namespace Console1
 {
@@ -35,7 +36,7 @@ namespace Console1
             return false; // The account does not exist
         }
 
-        public string CreateChatRoom(string roomName)
+        public Boolean CreateChatRoom(string roomName)
         {
             if (!chatRoomsList.Any(room => room.RoomName == roomName))
             {
@@ -43,15 +44,15 @@ namespace Console1
 
                 chatRoomsList.Add(newChatRoom);
 
-                return "Chat room created successfully";
+                return true;
             }
             else
             {
-                return "Chat room already exists";
+                return false;
             }
         }
 
-        public string JoinChatRoom(string roomName, string username)
+        public Boolean JoinChatRoom(string roomName, string username)
         {
             ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
@@ -60,16 +61,16 @@ namespace Console1
                 if (!chatRoom.Participants.Contains(username))
                 {
                     chatRoom.Participants.Add(username);
-                    return "Joined chat room successfully";
+                    return true;
                 }
                 else
                 {
-                    return "You are already a participant in this chat room";
+                    return false;
                 }
             }
             else
             {
-                return "Chat room does not exist";
+                return false;
             }
         }
 
@@ -94,7 +95,6 @@ namespace Console1
                 return "Chat room does not exist";
             }
         }
-
         public List<string> CreateInitialChatRooms()
         {
             List<string> initialChatRoomNames = new List<string>();
@@ -112,6 +112,34 @@ namespace Console1
             }
 
             return initialChatRoomNames;
+        }
+
+        public string SendMessage(string sender, string roomName, string message)
+        {
+            ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+
+            if (chatRoom != null)
+            {
+                if (chatRoom.Participants.Contains(sender))
+                {
+                    Message newMessage = new Message
+                    {
+                        Sender = sender,
+                        Content = message
+                    };
+
+                    chatRoom.Messages.Add(newMessage);
+                    return "Message sent successfully";
+                }
+                else
+                {
+                    return "You are not a participant in this chat room";
+                }
+            }
+            else
+            {
+                return "Chat room does not exist";
+            }
         }
     }
 }

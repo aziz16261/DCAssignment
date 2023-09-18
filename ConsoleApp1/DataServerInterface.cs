@@ -18,11 +18,11 @@ namespace Console1
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        string CreateChatRoom(string roomName);
+        Boolean CreateChatRoom(string roomName);
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        string JoinChatRoom(string roomName, string username);
+        Boolean JoinChatRoom(string roomName, string username);
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
@@ -31,5 +31,5 @@ namespace Console1
         [OperationContract]
         [FaultContract(typeof(ServerException))]
         List<string> CreateInitialChatRooms();
-}
+    }
 }

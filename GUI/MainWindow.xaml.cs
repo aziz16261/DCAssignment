@@ -1,4 +1,6 @@
-﻿using Console1;
+﻿
+using Console1;
+using DatabaseLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +28,7 @@ namespace GUI
 
         public List<string> ChatRoomsList { get; } = new List<string>();
 
+        public bool IsLoggedIn = false;
 
         public MainWindow()
         {
@@ -50,38 +53,82 @@ namespace GUI
 
             if (foob.CheckAccount(username) == true)
             {
-                NBox.Text=("Username already exists.");
+                NBox.Text = ("Username already exists.");
             }
             else
             {
                 Username.Text = ("Currently logged in as: ") + username;
+                IsLoggedIn = true;
             }
+        }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            IsLoggedIn = false;
+            Username.Text = ("Successfully logged out");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string roomName = roomName_txt.Text;
 
-            string result = foob.CreateChatRoom(roomName);
+            Boolean result = foob.CreateChatRoom(roomName);
 
-            if (result == "Chat room created successfully")
+            if (result == true && IsLoggedIn == true)
             {
                 ChatRoomsList.Add(roomName);
 
                 AvailableRooms.ItemsSource = null;
                 AvailableRooms.ItemsSource = ChatRoomsList;
             }
+            else if (IsLoggedIn == false)
+            {
+                MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if (ChatRoomsList.Contains(roomName))
+            {
+                MessageBox.Show("Failed, chat room with that name already exists", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             else
             {
-                roomName_txt.Text = "ERROR";
+                MessageBox.Show("Failed to create chat room", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
         }
 
 
-        private void ChatRoomListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
 
+
+
+        private void AvailableRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //Does not work, to be done
+
+           /*  if (AvailableRooms.SelectedItem != null)
+            {
+                string selectedRoom = AvailableRooms.SelectedItem.ToString();
+                string username = Username.Text;
+
+                Boolean result = foob.JoinChatRoom(selectedRoom, username);
+
+                if (result == true && IsLoggedIn == true)
+                {
+                    CurrentRoom.Text = selectedRoom;
+
+                    // Get the selected chat room from the ChatRoomsList property
+                    ChatRoom selectedChatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == selectedRoom);
+
+                    if (selectedChatRoom != null)
+                    {
+                        UsersInChatRoom = selectedChatRoom.Participants;
+
+                        // Now, UsersInChatRoom should be updated with the participants in the selected chat room.
+                    }
+                }
+
+                // Clear the selection after joining the chat room
+                AvailableRooms.SelectedItem = null;
+            }*/
         }
     }
 }
