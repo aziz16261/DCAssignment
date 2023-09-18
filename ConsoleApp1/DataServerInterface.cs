@@ -14,5 +14,17 @@ namespace Console1
         [OperationContract]
         [FaultContract(typeof(ServerException))]
         bool CheckAccount(String username);
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
+        string CreateChatRoom(string roomName);
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
+        string JoinChatRoom(string roomName, string username);
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
+        string LeaveChatRoom(string roomName, string username);
     }
 }

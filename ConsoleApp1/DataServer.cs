@@ -13,6 +13,7 @@ namespace Console1
     {
         private DatabaseClass database;
 
+        private List<ChatRoom> chatRoomsList = new List<ChatRoom>();
         public DataServer()
         {
             database = new DatabaseClass();
@@ -32,6 +33,66 @@ namespace Console1
 
             database.AddUser(username);
             return false; // The account does not exist
+        }
+
+        public string CreateChatRoom(string roomName)
+        {
+            if (!chatRoomsList.Any(room => room.RoomName == roomName))
+            {
+                ChatRoom newChatRoom = new ChatRoom(roomName);
+
+                chatRoomsList.Add(newChatRoom);
+
+                return "Chat room created successfully";
+            }
+            else
+            {
+                return "Chat room already exists";
+            }
+        }
+
+        public string JoinChatRoom(string roomName, string username)
+        {
+            ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+
+            if (chatRoom != null)
+            {
+                if (!chatRoom.Participants.Contains(username))
+                {
+                    chatRoom.Participants.Add(username);
+                    return "Joined chat room successfully";
+                }
+                else
+                {
+                    return "You are already a participant in this chat room";
+                }
+            }
+            else
+            {
+                return "Chat room does not exist";
+            }
+        }
+
+        public string LeaveChatRoom(string roomName, string username)
+        {
+            ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+
+            if (chatRoom != null)
+            {
+                if (chatRoom.Participants.Contains(username))
+                {
+                    chatRoom.Participants.Remove(username);
+                    return "Left chat room successfully";
+                }
+                else
+                {
+                    return "You are not a participant in this chat room";
+                }
+            }
+            else
+            {
+                return "Chat room does not exist";
+            }
         }
     }
 }

@@ -24,16 +24,22 @@ namespace GUI
     {
         private DataServerInterface foob;
 
+        public List<string> chatRoomsList { get; } = new List<string>();
+
+
         public MainWindow()
         {
             InitializeComponent();
 
+            
             ChannelFactory<DataServerInterface> foobFactory;
             NetTcpBinding tcp = new NetTcpBinding();
             //Set the URL and create the connection!
             string URL = "net.tcp://localhost:8100/ChatServer";
             foobFactory = new ChannelFactory<DataServerInterface>(tcp, URL);
             foob = foobFactory.CreateChannel();
+
+            AvailableRooms.ItemsSource = chatRoomsList;
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -49,6 +55,31 @@ namespace GUI
             {
                 Username.Text = ("Currently logged in as: ") + username;
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string roomName = roomName_txt.Text;
+
+            string result = foob.CreateChatRoom(roomName);
+
+            if (result == "Chat room created successfully")
+            {
+                chatRoomsList.Add(roomName);
+
+                AvailableRooms.ItemsSource = null;
+                AvailableRooms.ItemsSource = chatRoomsList;
+            }
+            else
+            {
+                roomName_txt.Text = "ERROR";
+            }
+        }
+
+
+        private void ChatRoomListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
