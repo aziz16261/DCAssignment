@@ -27,8 +27,13 @@
         </TextBox>
         <TextBlock HorizontalAlignment="Center" Margin="0,33,0,0" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" Height="22" Width="64" RenderTransformOrigin="-0.102,0.323"/>
         <TextBlock HorizontalAlignment="Left" Margin="575,35,0,0" TextWrapping="Wrap" Text="IP" VerticalAlignment="Top" Height="22" Width="64" RenderTransformOrigin="-0.102,0.323"/>
+<<<<<<< HEAD
         <TextBox x:Name="chatBox" HorizontalAlignment="Left" Height="272" Margin="303,86,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="487"/>
         <TextBox x:Name="MessageTextBox" TextWrapping="Wrap" Margin="303,363,121,10"/>
+=======
+        <TextBox x:Name="chatBox" HorizontalAlignment="Left" Height="284" Margin="209,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="581"/>
+        <TextBox x:Name="MessageBox" TextWrapping="Wrap" Margin="209,363,121,10"/>
+>>>>>>> 5322ff3b0b84e18823a9f321d0d7a9b664d11e83
         <Button x:Name="LogoutButton" Content="Log Out!" HorizontalAlignment="Left" Margin="103,74,0,0" VerticalAlignment="Top" Height="48" Width="83" RenderTransformOrigin="0.755,1.161" Click="LogoutButton_Click"/>
         <Button x:Name="SendBox" Content="Send!" HorizontalAlignment="Left" Margin="684,363,0,0" VerticalAlignment="Top" Height="43" Width="90"/>
         <Button x:Name="createChatRoom_btn" Content="Create Chat &#xD;&#xA;     Room&#xD;&#xA;" HorizontalAlignment="Left" Margin="10,177,0,0" VerticalAlignment="Top" Height="40" Width="176" Click="Button_Click"/>

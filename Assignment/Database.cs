@@ -18,7 +18,6 @@ namespace DatabaseLib
 
         public void AddUser(string username)
         {
-            // Check if the username already exists
             if (!dataStruct.Any(data => data.AcctUsername == username))
             {
                 DatabaseStorage.DataStruct data = new DatabaseStorage.DataStruct
@@ -26,7 +25,7 @@ namespace DatabaseLib
                     AcctUsername = username,
                 };
 
-                dataStruct.Add(data);
+                dataStruct.Add(data); //adding user to database
             }
             else
             {
@@ -34,7 +33,21 @@ namespace DatabaseLib
             }
         }
 
-            public List<DatabaseStorage.DataStruct> GetDataStructList() //getting the list of users
+        public void RemoveUser(string username)
+        {
+            // Check if the username exists, and if it does, remove it
+            var userToRemove = dataStruct.FirstOrDefault(data => data.AcctUsername == username);
+            if (userToRemove != null)
+            {
+                dataStruct.Remove(userToRemove);
+            }
+            else
+            {
+                throw new FaultException("Username not found");
+            }
+        }
+
+        public List<DatabaseStorage.DataStruct> GetDataStructList() //getting the list of users
         {
             return dataStruct;
         }
