@@ -35,6 +35,20 @@ namespace Console1
             return false; // The account does not exist
         }
 
+        public void RemoveAccount(string username)
+        {
+            List<DatabaseStorage.DataStruct> dataStructList = database.GetDataStructList();
+
+            foreach (var data in dataStructList)
+            {
+                if (data.AcctUsername == username)
+                {
+                    database.RemoveUser(username);
+                    return; // The account is removed
+                }
+            }
+        }
+
         public string CreateChatRoom(string roomName)
         {
             if (!chatRoomsList.Any(room => room.RoomName == roomName))

@@ -84,5 +84,14 @@ namespace GUI
         {
 
         }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            string username = NBox.Text;
+
+            foob.RemoveAccount(username);
+            Username.Text = ("you have been logged out: ") + username;
+            NBox.Text = ("Enter a unique username to Log in again.");
+        }
     }
 }
