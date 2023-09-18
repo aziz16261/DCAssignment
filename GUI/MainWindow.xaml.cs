@@ -52,7 +52,6 @@ namespace GUI
             {
                 NBox.Text=("Username already exists.");
             }
-
             else
             {
                 Username.Text = ("Currently logged in as: ") + username;
