@@ -24,14 +24,15 @@ namespace GUI
     {
         private DataServerInterface foob;
 
-        public List<string> chatRoomsList { get; } = new List<string>();
+        public List<string> ChatRoomsList { get; } = new List<string>();
 
 
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
 
-            
+
             ChannelFactory<DataServerInterface> foobFactory;
             NetTcpBinding tcp = new NetTcpBinding();
             //Set the URL and create the connection!
@@ -39,7 +40,8 @@ namespace GUI
             foobFactory = new ChannelFactory<DataServerInterface>(tcp, URL);
             foob = foobFactory.CreateChannel();
 
-            AvailableRooms.ItemsSource = chatRoomsList;
+            ChatRoomsList = foob.CreateInitialChatRooms();
+
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -65,15 +67,16 @@ namespace GUI
 
             if (result == "Chat room created successfully")
             {
-                chatRoomsList.Add(roomName);
+                ChatRoomsList.Add(roomName);
 
                 AvailableRooms.ItemsSource = null;
-                AvailableRooms.ItemsSource = chatRoomsList;
+                AvailableRooms.ItemsSource = ChatRoomsList;
             }
             else
             {
                 roomName_txt.Text = "ERROR";
             }
+
         }
 
 

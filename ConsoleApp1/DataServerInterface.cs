@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Console1
-{ 
+{
     [ServiceContract]
     public interface DataServerInterface
     {
@@ -26,5 +27,9 @@ namespace Console1
         [OperationContract]
         [FaultContract(typeof(ServerException))]
         string LeaveChatRoom(string roomName, string username);
-    }
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
+        List<string> CreateInitialChatRooms();
+}
 }

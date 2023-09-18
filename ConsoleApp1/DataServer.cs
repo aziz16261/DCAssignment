@@ -94,5 +94,24 @@ namespace Console1
                 return "Chat room does not exist";
             }
         }
+
+        public List<string> CreateInitialChatRooms()
+        {
+            List<string> initialChatRoomNames = new List<string>();
+
+            string[] initialRoomNames = { "ChatRoom 1", "ChatRoom 2", "ChatRoom 3" };
+
+            foreach (string roomName in initialRoomNames)
+            {
+                if (!chatRoomsList.Any(room => room.RoomName == roomName))
+                {
+                    ChatRoom newChatRoom = new ChatRoom(roomName);
+                    chatRoomsList.Add(newChatRoom);
+                    initialChatRoomNames.Add(roomName);
+                }
+            }
+
+            return initialChatRoomNames;
+        }
     }
 }
