@@ -61,12 +61,16 @@ namespace GUI
                 IsLoggedIn = true;
             }
         }
-
-        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+      private void LogoutButton_Click_1(object sender, RoutedEventArgs e)
         {
+            string username = NBox.Text;
+
+            foob.RemoveAccount(username);
+            Username.Text = ("you have been logged out: ") + username;
             IsLoggedIn = false;
-            Username.Text = ("Successfully logged out");
+            NBox.Text = ("Enter a unique username to Log in again.");
         }
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -131,13 +135,7 @@ namespace GUI
             }*/
         }
 
-        private void LogoutButton_Click(object sender, RoutedEventArgs e)
-        {
-            string username = NBox.Text;
 
-            foob.RemoveAccount(username);
-            Username.Text = ("you have been logged out: ") + username;
-            NBox.Text = ("Enter a unique username to Log in again.");
-        }
+  
     }
 }

@@ -36,9 +36,6 @@ namespace Console1
             return false; // The account does not exist
         }
 
-<<<<<<< HEAD
-        public Boolean CreateChatRoom(string roomName)
-=======
         public void RemoveAccount(string username)
         {
             List<DatabaseStorage.DataStruct> dataStructList = database.GetDataStructList();
@@ -53,8 +50,7 @@ namespace Console1
             }
         }
 
-        public string CreateChatRoom(string roomName)
->>>>>>> 5322ff3b0b84e18823a9f321d0d7a9b664d11e83
+        public Boolean CreateChatRoom(string roomName)
         {
             if (!chatRoomsList.Any(room => room.RoomName == roomName))
             {
