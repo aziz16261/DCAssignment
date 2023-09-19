@@ -1,8 +1,10 @@
 ﻿
+using Assignment;
 using Console1;
 using DatabaseLib;
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
@@ -38,13 +40,18 @@ namespace GUI
 
             ChannelFactory<DataServerInterface> foobFactory;
             NetTcpBinding tcp = new NetTcpBinding();
+            tcp.OpenTimeout = new TimeSpan(0, 20, 0);
+            tcp.CloseTimeout = new TimeSpan(0, 20, 0);
+            tcp.SendTimeout = new TimeSpan(0, 20, 0);
+            tcp.ReceiveTimeout = new TimeSpan(0, 20, 0);
             //Set the URL and create the connection!
+
             string URL = "net.tcp://localhost:8100/ChatServer";
             foobFactory = new ChannelFactory<DataServerInterface>(tcp, URL);
             foob = foobFactory.CreateChannel();
 
             ChatRoomsList = foob.CreateInitialChatRooms();
-
+            AvailableRooms.ItemsSource = ChatRoomsList;
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -100,6 +107,11 @@ namespace GUI
 
         }
 
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Allows you to switch chat rooms, but doesn't let you go back to a previous selection
+
+            if (AvailableRooms.SelectedItem != null)
 
 
 
@@ -110,6 +122,10 @@ namespace GUI
             {
                 if (AvailableRooms.SelectedItem != null)
                 {
+                    chatroom_name_Block.Text = selectedRoom;
+
+                    // Get the selected chat room from the ChatRoomsList property
+                    ChatRoom selectedChatRoom = foob.GetChatRoom(selectedRoom);
                     string selectedRoomName = AvailableRooms.SelectedItem.ToString();
                     string username = Username.Text;
 
@@ -117,6 +133,21 @@ namespace GUI
 
                     if (result && IsLoggedIn)
                     {
+                        //string roomMessages = "";
+
+                        currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
+
+                        /* 
+                         * For some reason the messages are null for the initial chat rooms
+                        foreach (Message message in selectedChatRoom.Messages)
+                        {
+                            roomMessages += message.Sender + ": " + message.Content + "\n";
+                        }
+
+                        chatBox.Text = roomMessages;
+
+                        */
+
                         ChatRoomName.Text = selectedRoomName;
 
                         List<ChatRoom> rooms = foob.ConvertChatRooms(ChatRoomsList);
@@ -136,6 +167,11 @@ namespace GUI
                         MessageBox.Show("Failed to join the chat room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
+
+                // Clear the selection after joining the chat room
+                AvailableRooms.SelectedItem = -1;
+            }
+        }
             }
             catch (Exception ex)
             {
