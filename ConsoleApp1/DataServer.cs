@@ -115,11 +115,36 @@ namespace Console1
 
             string[] initialRoomNames = { "ChatRoom 1", "ChatRoom 2", "ChatRoom 3" };
 
+            /*
+            // Possible test messages
+
+            List<Message> sampleMessages = new List<Message>();
+            Message testMessage = new Message();
+
+            testMessage.Sender = "Admin";
+            testMessage.Content = "Heres a test message.";
+            sampleMessages.Add(testMessage);
+
+            testMessage.Sender = "Slayer";
+            testMessage.Content = "Whoa thats so cool!";
+            sampleMessages.Add(testMessage);
+
+            testMessage.Sender = "Merasmus";
+            testMessage.Content = "All of your base is belong to us.";
+            sampleMessages.Add(testMessage);
+
+            testMessage.Sender = "Slayer";
+            testMessage.Content = "That's less cool :|";
+            sampleMessages.Add(testMessage);
+
+            */
+
             foreach (string roomName in initialRoomNames)
             {
                 if (!chatRoomsList.Any(room => room.RoomName == roomName))
                 {
                     ChatRoom newChatRoom = new ChatRoom(roomName);
+                    //newChatRoom.Messages = sampleMessages;
                     chatRoomsList.Add(newChatRoom);
                     initialChatRoomNames.Add(roomName);
                 }
@@ -154,6 +179,24 @@ namespace Console1
             {
                 return "Chat room does not exist";
             }
+        }
+
+        public List<ChatRoom> GetChatRooms() {  return chatRoomsList; }
+
+        public ChatRoom GetChatRoom(string roomName)
+        {
+            ChatRoom chatRoom = null;
+
+            foreach (ChatRoom room in chatRoomsList)
+            {
+                if (room.RoomName == roomName)
+                {
+                    chatRoom = room;
+                    return chatRoom;
+                }
+            }
+
+            return chatRoom;
         }
     }
 }
