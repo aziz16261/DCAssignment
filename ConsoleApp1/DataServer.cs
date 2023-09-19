@@ -181,7 +181,7 @@ namespace Console1
             }
         }
 
-        public List<ChatRoom> GetChatRooms() {  return chatRoomsList; }
+        public List<ChatRoom> GetChatRooms() { return chatRoomsList; }
 
         public ChatRoom GetChatRoom(string roomName)
         {
@@ -197,18 +197,6 @@ namespace Console1
             }
 
             return chatRoom;
-        public List<ChatRoom> ConvertChatRooms(List<string> roomNames)
-        {
-            List<ChatRoom> chatRooms = new List<ChatRoom>();
-            foreach (string roomName in roomNames)
-            {
-                ChatRoom newChatRoom = new ChatRoom(roomName);
-                chatRooms.Add(newChatRoom);
-            }
-
-            return chatRooms;
         }
     }
 }
-
-    
