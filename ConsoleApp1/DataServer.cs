@@ -155,5 +155,19 @@ namespace Console1
                 return "Chat room does not exist";
             }
         }
+
+        public List<ChatRoom> ConvertChatRooms(List<string> roomNames)
+        {
+            List<ChatRoom> chatRooms = new List<ChatRoom>();
+            foreach (string roomName in roomNames)
+            {
+                ChatRoom newChatRoom = new ChatRoom(roomName);
+                chatRooms.Add(newChatRoom);
+            }
+
+            return chatRooms;
+        }
     }
 }
+
+    

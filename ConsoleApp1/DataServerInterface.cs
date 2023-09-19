@@ -35,6 +35,10 @@ namespace Console1
         [OperationContract]
         [FaultContract(typeof(ServerException))]
         void RemoveAccount(string username);
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
+         List<ChatRoom> ConvertChatRooms(List<string> roomNames);
 }
 
 }
