@@ -112,20 +112,26 @@ namespace GUI
             // Allows you to switch chat rooms, but doesn't let you go back to a previous selection
 
             if (AvailableRooms.SelectedItem != null)
+
+
+
+
+        private void AvailableRooms_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+        {
+            try
             {
-                string selectedRoom = AvailableRooms.SelectedItem.ToString();
-                string username = Username.Text;
-
-                Boolean result = foob.JoinChatRoom(selectedRoom, username);
-
-                if (result == true && IsLoggedIn == true)
+                if (AvailableRooms.SelectedItem != null)
                 {
                     chatroom_name_Block.Text = selectedRoom;
 
                     // Get the selected chat room from the ChatRoomsList property
                     ChatRoom selectedChatRoom = foob.GetChatRoom(selectedRoom);
+                    string selectedRoomName = AvailableRooms.SelectedItem.ToString();
+                    string username = Username.Text;
 
-                    if (selectedChatRoom != null)
+                    bool result = foob.JoinChatRoom(selectedRoomName, username);
+
+                    if (result && IsLoggedIn)
                     {
                         //string roomMessages = "";
 
@@ -142,13 +148,40 @@ namespace GUI
 
                         */
 
-                        // Now, UsersInChatRoom should be updated with the participants in the selected chat room.
+                        ChatRoomName.Text = selectedRoomName;
+
+                        List<ChatRoom> rooms = foob.ConvertChatRooms(ChatRoomsList);
+
+                        ChatRoom selectedChatRoom = rooms.FirstOrDefault(room => room.RoomName == selectedRoomName);
+
+                        if (selectedChatRoom != null)
+                        {
+                            List<string> participants = selectedChatRoom.GetParticipants();
+                            UsersInChatRoom.ItemsSource = participants;
+                        }
+
+                        AvailableRooms.SelectedItem = null;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to join the chat room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
 
                 // Clear the selection after joining the chat room
                 AvailableRooms.SelectedItem = -1;
             }
+        }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
