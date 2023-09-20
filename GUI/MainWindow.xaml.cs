@@ -149,32 +149,41 @@ namespace GUI
 
         private void SendBox_Click(object sender, RoutedEventArgs e)
         {
-            string roomName = roomName_txt.Text;
-            string message = MessageTextBox.Text; 
+            string roomName = chatroom_name_Block.Text;
+            string message = MessageTextBox.Text;
 
-            if (IsLoggedIn)
+            if (IsLoggedIn == true)
             {
-                List<ChatRoom> updatedChatRoomsList = foob.SendMessage(Username.Text, roomName, message, ChatRoomsList);
+                ChatRoom userChatRoom = ChatRoomsList.FirstOrDefault(room => room.Participants.Contains(Username.Text));
 
-                if (updatedChatRoomsList != null)
+                if (userChatRoom != null)
                 {
-                    ChatRoomsList = updatedChatRoomsList;
+                    List<ChatRoom> updatedChatRoomsList = foob.SendMessage(Username.Text, roomName, message, ChatRoomsList);
 
-                    ChatRoom updatedChatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
-
-                    if (updatedChatRoom != null)
+                    if (updatedChatRoomsList != null)
                     {
-                        chatBox.Text = string.Join(Environment.NewLine, updatedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
-                        MessageTextBox.Clear();
+                        ChatRoomsList = updatedChatRoomsList;
+
+                        ChatRoom updatedChatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+
+                        if (updatedChatRoom != null)
+                        {
+                            chatBox.Text = string.Join(Environment.NewLine, updatedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
+                            MessageTextBox.Clear();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Chat room not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
                     else
                     {
-                        MessageBox.Show("Chat room not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Failed to send message", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Failed to send message", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("You are not in a chat room", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
