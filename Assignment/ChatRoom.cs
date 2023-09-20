@@ -23,6 +23,7 @@ namespace DatabaseLib
         {
             RoomName = roomName;
             Participants = new List<string>();
+            Messages = new List<Message>();
         }
 
         public List<string> GetParticipants()

@@ -111,7 +111,7 @@ namespace GUI
             if (AvailableRooms.SelectedItem != null)
             {
                 string selectedRoom = AvailableRooms.SelectedItem.ToString();
-                string username = Username.Text;
+                string username = NBox.Text;
 
                 ChatRoomsList = foob.JoinChatRoom(selectedRoom, username, ChatRoomsList);
 
@@ -144,6 +144,42 @@ namespace GUI
                 }
 
                 AvailableRooms.SelectedItem = null;
+            }
+        }
+
+        private void SendBox_Click(object sender, RoutedEventArgs e)
+        {
+            string roomName = roomName_txt.Text;
+            string message = MessageTextBox.Text; 
+
+            if (IsLoggedIn)
+            {
+                List<ChatRoom> updatedChatRoomsList = foob.SendMessage(Username.Text, roomName, message, ChatRoomsList);
+
+                if (updatedChatRoomsList != null)
+                {
+                    ChatRoomsList = updatedChatRoomsList;
+
+                    ChatRoom updatedChatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+
+                    if (updatedChatRoom != null)
+                    {
+                        chatBox.Text = string.Join(Environment.NewLine, updatedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
+                        MessageTextBox.Clear();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Chat room not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Failed to send message", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

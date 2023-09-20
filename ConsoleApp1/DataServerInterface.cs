@@ -43,6 +43,10 @@ namespace Console1
         [OperationContract]
         [FaultContract(typeof(ServerException))]
         ChatRoom GetChatRoom(string roomName, List<ChatRoom> chatRoomsList);
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
+        List<ChatRoom> SendMessage(string sender, string roomName, string message, List<ChatRoom> chatRoomsList);
     }
 
 }
