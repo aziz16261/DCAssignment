@@ -28,7 +28,7 @@ namespace GUI
     {
         private DataServerInterface foob;
 
-        public List<string> ChatRoomsList { get; } = new List<string>();
+        public List<ChatRoom> ChatRoomsList { get; set; } = new List<ChatRoom>();
 
         public bool IsLoggedIn = false;
 
@@ -50,8 +50,8 @@ namespace GUI
             foobFactory = new ChannelFactory<DataServerInterface>(tcp, URL);
             foob = foobFactory.CreateChannel();
 
-            ChatRoomsList = foob.CreateInitialChatRooms();
-            AvailableRooms.ItemsSource = ChatRoomsList;
+            ChatRoomsList = foob.CreateInitialChatRooms(ChatRoomsList);
+            AvailableRooms.ItemsSource = ChatRoomsList.Select(room => room.RoomName);
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -83,20 +83,19 @@ namespace GUI
         {
             string roomName = roomName_txt.Text;
 
-            Boolean result = foob.CreateChatRoom(roomName);
+            ChatRoomsList = foob.CreateChatRoom(roomName, ChatRoomsList);
 
-            if (result == true && IsLoggedIn == true)
+            if (IsLoggedIn)
             {
-                ChatRoomsList.Add(roomName);
-
                 AvailableRooms.ItemsSource = null;
-                AvailableRooms.ItemsSource = ChatRoomsList;
+
+                AvailableRooms.ItemsSource = ChatRoomsList.Select(room => room.RoomName);
             }
-            else if (IsLoggedIn == false)
+            else if (!IsLoggedIn)
             {
                 MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (ChatRoomsList.Contains(roomName))
+            else if (ChatRoomsList.Any(room => room.RoomName == roomName))
             {
                 MessageBox.Show("Failed, chat room with that name already exists", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -104,50 +103,47 @@ namespace GUI
             {
                 MessageBox.Show("Failed to create chat room", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Allows you to switch chat rooms, but doesn't let you go back to a previous selection
 
             if (AvailableRooms.SelectedItem != null)
             {
                 string selectedRoom = AvailableRooms.SelectedItem.ToString();
                 string username = Username.Text;
 
-                Boolean result = foob.JoinChatRoom(selectedRoom, username);
+                ChatRoomsList = foob.JoinChatRoom(selectedRoom, username, ChatRoomsList);
 
-                if (result == true && IsLoggedIn == true)
+                if ( IsLoggedIn == true)
                 {
-                    chatroom_name_Block.Text = selectedRoom;
+                    ChatRoom selectedChatRoom = null;
 
-                    // Get the selected chat room from the ChatRoomsList property
-                    ChatRoom selectedChatRoom = foob.GetChatRoom(selectedRoom);
+                    foreach (ChatRoom room in ChatRoomsList)
+                    {
+                        if (room.RoomName == selectedRoom)
+                        {
+                            selectedChatRoom = room;
+                            break;
+                        }
+                    }
 
                     if (selectedChatRoom != null)
                     {
-                        //string roomMessages = "";
+                        chatroom_name_Block.Text = selectedChatRoom.RoomName;
+
+                        Console.WriteLine("Participants: " + selectedChatRoom.GetParticipantsAsString());
+                        Console.WriteLine("Participants count: " + selectedChatRoom.Participants.Count);
 
                         currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
-
-                        /* 
-                         * For some reason the messages are null for the initial chat rooms
-                        foreach (Message message in selectedChatRoom.Messages)
-                        {
-                            roomMessages += message.Sender + ": " + message.Content + "\n";
-                        }
-
-                        chatBox.Text = roomMessages;
-
-                        */
-
-                        // Now, UsersInChatRoom should be updated with the participants in the selected chat room.
+                    }
+                    else
+                    {
+                        Console.WriteLine("Selected chat room not found in ChatRoomsList");
                     }
                 }
 
-                // Clear the selection after joining the chat room
-                AvailableRooms.SelectedItem = -1;
+                AvailableRooms.SelectedItem = null;
             }
         }
     }

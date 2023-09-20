@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using Assignment;
+using System.Diagnostics;
 
 namespace Console1
 {
@@ -14,7 +15,7 @@ namespace Console1
     {
         private DatabaseClass database;
 
-        private List<ChatRoom> chatRoomsList = new List<ChatRoom>();
+       // private List<ChatRoom> chatRoomsList = new List<ChatRoom>();
         public DataServer()
         {
             database = new DatabaseClass();
@@ -50,45 +51,48 @@ namespace Console1
             }
         }
 
-        public Boolean CreateChatRoom(string roomName)
+        public List<ChatRoom> CreateChatRoom(string roomName, List<ChatRoom> chatRoomsList)
         {
             if (!chatRoomsList.Any(room => room.RoomName == roomName))
             {
-                ChatRoom newChatRoom = new ChatRoom(roomName);
-
-                chatRoomsList.Add(newChatRoom);
-
-                return true;
+                chatRoomsList.Add(new ChatRoom(roomName));
+                return chatRoomsList;
             }
-            else
-            {
-                return false;
-            }
+
+            return null;
         }
 
-        public Boolean JoinChatRoom(string roomName, string username)
+        public List<ChatRoom> JoinChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList)
         {
             ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
             if (chatRoom != null)
             {
+                Console.WriteLine("Found chat room: " + chatRoom.RoomName);
+
                 if (!chatRoom.Participants.Contains(username))
                 {
                     chatRoom.Participants.Add(username);
-                    return true;
+                    Console.WriteLine("Added participant" + username);
+                    return chatRoomsList;
                 }
                 else
                 {
-                    return false;
+                    Console.WriteLine("Participant already exists " + username);
+                    return null;
                 }
             }
             else
             {
-                return false;
+                Console.WriteLine("Chat room not found: " + roomName);
+                return null;
             }
         }
 
-        public string LeaveChatRoom(string roomName, string username)
+
+
+
+        public string LeaveChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList)
         {
             ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
@@ -109,51 +113,22 @@ namespace Console1
                 return "Chat room does not exist";
             }
         }
-        public List<string> CreateInitialChatRooms()
+        public List<ChatRoom> CreateInitialChatRooms(List<ChatRoom> chatRoomsList)
         {
-            List<string> initialChatRoomNames = new List<string>();
-
-            string[] initialRoomNames = { "ChatRoom 1", "ChatRoom 2", "ChatRoom 3" };
-
-            /*
-            // Possible test messages
-
-            List<Message> sampleMessages = new List<Message>();
-            Message testMessage = new Message();
-
-            testMessage.Sender = "Admin";
-            testMessage.Content = "Heres a test message.";
-            sampleMessages.Add(testMessage);
-
-            testMessage.Sender = "Slayer";
-            testMessage.Content = "Whoa thats so cool!";
-            sampleMessages.Add(testMessage);
-
-            testMessage.Sender = "Merasmus";
-            testMessage.Content = "All of your base is belong to us.";
-            sampleMessages.Add(testMessage);
-
-            testMessage.Sender = "Slayer";
-            testMessage.Content = "That's less cool :|";
-            sampleMessages.Add(testMessage);
-
-            */
-
-            foreach (string roomName in initialRoomNames)
+            for (int i = 1; i <= 3; i++)
             {
+                string roomName = "ChatRoom " + i;
+
                 if (!chatRoomsList.Any(room => room.RoomName == roomName))
                 {
                     ChatRoom newChatRoom = new ChatRoom(roomName);
-                    //newChatRoom.Messages = sampleMessages;
                     chatRoomsList.Add(newChatRoom);
-                    initialChatRoomNames.Add(roomName);
                 }
             }
 
-            return initialChatRoomNames;
+            return chatRoomsList;
         }
-
-        public string SendMessage(string sender, string roomName, string message)
+        public string SendMessage(string sender, string roomName, string message, List<ChatRoom> chatRoomsList)
         {
             ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
@@ -181,9 +156,9 @@ namespace Console1
             }
         }
 
-        public List<ChatRoom> GetChatRooms() { return chatRoomsList; }
+       // public List<ChatRoom> GetChatRooms() { return chatRoomsList; }
 
-        public ChatRoom GetChatRoom(string roomName)
+        public ChatRoom GetChatRoom(string roomName, List<ChatRoom> chatRoomsList)
         {
             ChatRoom chatRoom = null;
 
@@ -191,6 +166,7 @@ namespace Console1
             {
                 if (room.RoomName == roomName)
                 {
+                    Console.WriteLine((room.RoomName));
                     chatRoom = room;
                     return chatRoom;
                 }
@@ -198,5 +174,6 @@ namespace Console1
 
             return chatRoom;
         }
+
     }
 }

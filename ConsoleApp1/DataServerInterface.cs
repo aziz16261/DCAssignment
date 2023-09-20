@@ -18,31 +18,31 @@ namespace Console1
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        Boolean CreateChatRoom(string roomName);
+        List<ChatRoom> CreateChatRoom(string roomName, List<ChatRoom> chatRoomsList);
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        Boolean JoinChatRoom(string roomName, string username);
+        List<ChatRoom> JoinChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList);
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        string LeaveChatRoom(string roomName, string username);
+        string LeaveChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList);
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        List<string> CreateInitialChatRooms();
+        List<ChatRoom> CreateInitialChatRooms(List<ChatRoom> chatRoomsList);
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
         void RemoveAccount(string username);
 
-        [OperationContract]
-        [FaultContract(typeof(ServerException))]
-        List<ChatRoom> GetChatRooms();
+      //  [OperationContract]
+       // [FaultContract(typeof(ServerException))]
+       // List<ChatRoom> GetChatRooms();
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        ChatRoom GetChatRoom(string roomName);
+        ChatRoom GetChatRoom(string roomName, List<ChatRoom> chatRoomsList);
     }
 
 }
