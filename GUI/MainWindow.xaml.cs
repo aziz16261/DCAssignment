@@ -151,14 +151,14 @@ namespace GUI
         {
             string roomName = chatroom_name_Block.Text;
             string message = MessageTextBox.Text;
+            List<ChatRoom> updatedChatRoomsList = foob.SendMessage(NBox.Text, roomName, message, ChatRoomsList);
 
             if (IsLoggedIn == true)
             {
-                ChatRoom userChatRoom = ChatRoomsList.FirstOrDefault(room => room.Participants.Contains(Username.Text));
+                ChatRoom userChatRoom = ChatRoomsList.FirstOrDefault(room => room.Participants.Contains(NBox.Text));
 
                 if (userChatRoom != null)
                 {
-                    List<ChatRoom> updatedChatRoomsList = foob.SendMessage(Username.Text, roomName, message, ChatRoomsList);
 
                     if (updatedChatRoomsList != null)
                     {
