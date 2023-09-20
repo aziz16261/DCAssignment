@@ -29,12 +29,13 @@ namespace Console1
             {
                 if (data.AcctUsername == username)
                 {
-                    return true; // The account exists 
+                    Console.WriteLine("username already exists: " + username);
+                    return true; 
                 }
             }
 
-            database.AddUser(username);
-            return false; // The account does not exist
+            Console.WriteLine("Logged in as: " + username);
+            return false; 
         }
 
         public void RemoveAccount(string username)
@@ -45,8 +46,9 @@ namespace Console1
             {
                 if (data.AcctUsername == username)
                 {
+                    Console.WriteLine("logged out: " + username);
                     database.RemoveUser(username);
-                    return; // The account is removed
+                    return; 
                 }
             }
         }
@@ -56,6 +58,7 @@ namespace Console1
             if (!chatRoomsList.Any(room => room.RoomName == roomName))
             {
                 chatRoomsList.Add(new ChatRoom(roomName));
+                Console.WriteLine("new chat room created: " + roomName);
                 return chatRoomsList;
             }
 
@@ -73,7 +76,7 @@ namespace Console1
                 if (!chatRoom.Participants.Contains(username))
                 {
                     chatRoom.Participants.Add(username);
-                    Console.WriteLine("Added participant" + username);
+                    Console.WriteLine("Added participant: " + username);
                     return chatRoomsList;
                 }
                 else
@@ -98,10 +101,12 @@ namespace Console1
                 if (chatRoom.Participants.Contains(username))
                 {
                     chatRoom.Participants.Remove(username);
+                    Console.WriteLine("removed participant from chat room: " + username);
                     return chatRoomsList;
                 }
                 else
                 {
+                    Console.WriteLine("participant is not in chat room: " + username);
                     return null;
                 }
             }
@@ -140,6 +145,7 @@ namespace Console1
                         Content = message
                     };
 
+                    Console.WriteLine("sender: " + sender + "\nmessage: " + message);
                     chatRoom.Messages.Add(newMessage);
                     return chatRoomsList;
                 }
