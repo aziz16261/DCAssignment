@@ -26,7 +26,7 @@ namespace Console1
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        string LeaveChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList);
+        List<ChatRoom> LeaveChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList);
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]

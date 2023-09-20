@@ -52,5 +52,6 @@
             </ListView.View>
         </ListView>
         <ListBox x:Name="AvailableRooms" HorizontalAlignment="Left" Height="184" Margin="12,222,0,0" VerticalAlignment="Top" Width="174" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="ListBox_SelectionChanged"/>
+        <Button x:Name="LeaveChatRoom" Content="Leave Chat Room" HorizontalAlignment="Left" Margin="209,10,0,0" VerticalAlignment="Top" Height="29" Width="106" Click="LeaveChatRoom_Click"/>
     </Grid>
 </Window>

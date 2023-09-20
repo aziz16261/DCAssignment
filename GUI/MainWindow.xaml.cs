@@ -83,67 +83,68 @@ namespace GUI
         {
             string roomName = roomName_txt.Text;
 
-            ChatRoomsList = foob.CreateChatRoom(roomName, ChatRoomsList);
-
-            if (IsLoggedIn)
-            {
-                AvailableRooms.ItemsSource = null;
-
-                AvailableRooms.ItemsSource = ChatRoomsList.Select(room => room.RoomName);
-            }
-            else if (!IsLoggedIn)
-            {
-                MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (ChatRoomsList.Any(room => room.RoomName == roomName))
+            if (ChatRoomsList.Any(room => room.RoomName == roomName))
             {
                 MessageBox.Show("Failed, chat room with that name already exists", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            else if (IsLoggedIn)
+            {
+                ChatRoomsList = foob.CreateChatRoom(roomName, ChatRoomsList);
+
+                if (ChatRoomsList != null)
+                {
+                    AvailableRooms.ItemsSource = null;
+                    AvailableRooms.ItemsSource = ChatRoomsList.Select(room => room.RoomName);
+                }
+                else
+                {
+                    MessageBox.Show("Failed to create chat room", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
             else
             {
-                MessageBox.Show("Failed to create chat room", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             if (AvailableRooms.SelectedItem != null)
             {
                 string selectedRoom = AvailableRooms.SelectedItem.ToString();
                 string username = NBox.Text;
 
-                ChatRoomsList = foob.JoinChatRoom(selectedRoom, username, ChatRoomsList);
+                ChatRoom userCurrentRoom = ChatRoomsList.FirstOrDefault(room => room.Participants.Contains(username));
 
-                if ( IsLoggedIn == true)
+                if (userCurrentRoom != null)
                 {
-                    ChatRoom selectedChatRoom = null;
+                    MessageBox.Show("You are already a participant in a different room. Please leave the current room if you want to join this one.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else
+                {
+                    ChatRoomsList = foob.JoinChatRoom(selectedRoom, username, ChatRoomsList);
 
-                    foreach (ChatRoom room in ChatRoomsList)
+                    if (IsLoggedIn == true)
                     {
-                        if (room.RoomName == selectedRoom)
+                        ChatRoom selectedChatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == selectedRoom);
+
+                        if (selectedChatRoom != null)
                         {
-                            selectedChatRoom = room;
-                            break;
+                            chatroom_name_Block.Text = selectedChatRoom.RoomName;
+
+                            Console.WriteLine("Participants: " + selectedChatRoom.GetParticipantsAsString());
+                            Console.WriteLine("Participants count: " + selectedChatRoom.Participants.Count);
+
+                            currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Selected chat room not found in ChatRoomsList");
                         }
                     }
 
-                    if (selectedChatRoom != null)
-                    {
-                        chatroom_name_Block.Text = selectedChatRoom.RoomName;
-
-                        Console.WriteLine("Participants: " + selectedChatRoom.GetParticipantsAsString());
-                        Console.WriteLine("Participants count: " + selectedChatRoom.Participants.Count);
-
-                        currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Selected chat room not found in ChatRoomsList");
-                    }
+                    AvailableRooms.SelectedItem = null;
                 }
-
-                AvailableRooms.SelectedItem = null;
             }
         }
 
@@ -189,6 +190,35 @@ namespace GUI
             else
             {
                 MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void LeaveChatRoom_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsLoggedIn)
+            {
+                string roomName = chatroom_name_Block.Text;
+                string username = NBox.Text;
+
+                ChatRoomsList = foob.LeaveChatRoom(roomName, username, ChatRoomsList); 
+
+                if (ChatRoomsList != null)
+                {
+                    chatroom_name_Block.Text = string.Empty; 
+                    currentRoomParticipants.ItemsSource = null; 
+
+                    AvailableRooms.ItemsSource = null;
+                    AvailableRooms.ItemsSource = ChatRoomsList.Select(room => room.RoomName);
+                    chatBox.Clear();
+                }
+                else
+                {
+                    MessageBox.Show("Failed to leave the chat room", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("User is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

@@ -89,7 +89,7 @@ namespace Console1
             }
         }
 
-        public string LeaveChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList)
+        public List<ChatRoom> LeaveChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList)
         {
             ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
@@ -98,18 +98,19 @@ namespace Console1
                 if (chatRoom.Participants.Contains(username))
                 {
                     chatRoom.Participants.Remove(username);
-                    return "Left chat room successfully";
+                    return chatRoomsList;
                 }
                 else
                 {
-                    return "You are not a participant in this chat room";
+                    return null;
                 }
             }
             else
             {
-                return "Chat room does not exist";
+                return null;
             }
         }
+
         public List<ChatRoom> CreateInitialChatRooms(List<ChatRoom> chatRoomsList)
         {
             for (int i = 1; i <= 3; i++)
