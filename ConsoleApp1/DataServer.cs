@@ -7,6 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Assignment;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.ServiceModel.Dispatcher;
 
 namespace Console1
 {
@@ -14,8 +18,10 @@ namespace Console1
     public class DataServer : DataServerInterface
     {
         private DatabaseClass database;
-
-       // private List<ChatRoom> chatRoomsList = new List<ChatRoom>();
+        IPAddress localAddr = IPAddress.Parse("192.168.56.1");
+        string streamString, streamSize;
+        byte[] data;
+        int arraySize;
         public DataServer()
         {
             database = new DatabaseClass();
@@ -30,19 +36,19 @@ namespace Console1
                 if (data.AcctUsername == username)
                 {
                     Console.WriteLine("username already exists: " + username);
-                    return true; 
+                    return true;
                 }
             }
 
-            
-            return false; 
+
+            return false;
         }
 
         public void CreateAccount(string username)
         {
 
             if (!CheckAccount(username))
-            {   
+            {
                 Console.WriteLine("Logging in as: " + username);
                 Console.WriteLine("Added account " + username);
                 database.AddUser(username);
@@ -59,7 +65,7 @@ namespace Console1
                 {
                     Console.WriteLine("logged out: " + username);
                     database.RemoveUser(username);
-                    return; 
+                    return;
                 }
             }
         }
@@ -173,7 +179,7 @@ namespace Console1
             }
         }
 
-       // public List<ChatRoom> GetChatRooms() { return chatRoomsList; }
+        // public List<ChatRoom> GetChatRooms() { return chatRoomsList; }
 
         public ChatRoom GetChatRoom(string roomName, List<ChatRoom> chatRoomsList)
         {
@@ -192,5 +198,43 @@ namespace Console1
             return chatRoom;
         }
 
+        /// <summary>
+        /// This code below is for handling the file sharing, it doesn't work just yet, probably needs the buttons to be on seperate threads
+        /// </summary>
+        public string UploadFile(string fileName)
+        {
+            Console.WriteLine("Started upload process");
+            EstablishFileConnection(fileName);
+            TcpListener listener = new TcpListener(localAddr, 8102);
+            Console.WriteLine("Established listener for port 8102");
+            listener.Start();
+            TcpClient client = listener.AcceptTcpClient();
+            Console.WriteLine("Client connected for upload");
+            Stream stream = client.GetStream();
+            data = new byte[stream.Length];
+            stream.Read(data, 0, data.Length);
+            File.WriteAllBytes("localhost:" + "\\" + streamString.Substring(0, streamString.LastIndexOf('.')), data);
+            listener.Stop();
+            client.Close();
+
+            return fileName;
+        }
+
+        private void EstablishFileConnection(string filePath)
+        {
+            TcpListener list = new TcpListener(localAddr, 8101);
+            Console.WriteLine("Established listener for port 8101");
+            list.Start();
+            Console.WriteLine("Started listener for port 8101");
+            TcpClient client = list.AcceptTcpClient();
+            Console.WriteLine("Client trying to connect for file upload");
+            StreamReader sr = new StreamReader(client.GetStream());
+            streamString = sr.ReadLine();
+            streamSize = streamString.Substring(streamString.LastIndexOf('.') + 1);
+            arraySize = int.Parse(streamSize);
+            list.Stop();
+            client.Close();
+            
+        }
     }
 }

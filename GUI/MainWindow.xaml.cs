@@ -4,8 +4,11 @@ using Console1;
 using DatabaseLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Packaging;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +21,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
+using System.Reflection.Emit;
 
 namespace GUI
 {
@@ -31,6 +36,8 @@ namespace GUI
         public List<ChatRoom> ChatRoomsList { get; set; } = new List<ChatRoom>();
 
         public bool IsLoggedIn = false;
+
+        private string storedFile;
 
         public MainWindow()
         {
@@ -221,6 +228,40 @@ namespace GUI
             {
                 MessageBox.Show("User is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        /// <summary>
+        /// This code below is for handling the file sharing, it doesn't work just yet, probably needs the buttons to be on seperate threads
+        /// </summary>
+        
+        private void FileTransfer_Click(object sender, RoutedEventArgs e)
+        {
+
+            storedFile = "C:\\Users\\Caio\\Desktop\\testFile.txt";
+            Console.WriteLine("Attempting to upload file");
+
+            
+            foob.UploadFile(storedFile);
+
+            FileInfo fi = new FileInfo(storedFile);
+            String fileInfo = fi.Name + "." + fi.Length;
+            Console.WriteLine("Stored file info");
+            TcpClient client = new TcpClient("localHost", 8102);
+            Console.WriteLine("Established client");
+            StreamWriter sw = new StreamWriter(client.GetStream());
+            Console.WriteLine("Established fileWriter");
+            sw.WriteLine(fileInfo);
+            sw.Flush();
+        }
+
+        private void FileTransferSendButton_Click(object sender, RoutedEventArgs e)
+        {
+            TcpClient client = new TcpClient("localhost", 8101);
+            Stream clientStream = client.GetStream();
+            byte[] dataStream = File.ReadAllBytes(storedFile);
+            clientStream.Write(dataStream, 0, dataStream.Length);
+            client.Close();
+           
         }
     }
 }

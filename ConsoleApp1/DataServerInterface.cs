@@ -51,6 +51,10 @@ namespace Console1
         [OperationContract]
         [FaultContract(typeof(ServerException))]
         List<ChatRoom> SendMessage(string sender, string roomName, string message, List<ChatRoom> chatRoomsList);
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
+        String UploadFile(string filePath);
     }
 
 }
