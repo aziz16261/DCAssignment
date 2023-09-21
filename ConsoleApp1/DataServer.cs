@@ -34,8 +34,19 @@ namespace Console1
                 }
             }
 
-            Console.WriteLine("Logged in as: " + username);
+            
             return false; 
+        }
+
+        public void CreateAccount(string username)
+        {
+
+            if (!CheckAccount(username))
+            {   
+                Console.WriteLine("Logging in as: " + username);
+                Console.WriteLine("Added account " + username);
+                database.AddUser(username);
+            }
         }
 
         public void RemoveAccount(string username)

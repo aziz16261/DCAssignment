@@ -65,6 +65,7 @@ namespace GUI
             else
             {
                 Username.Text = ("Currently logged in as: ") + username;
+                foob.CreateAccount(username);
                 IsLoggedIn = true;
             }
         }

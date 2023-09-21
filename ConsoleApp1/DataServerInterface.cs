@@ -34,6 +34,10 @@ namespace Console1
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
+        void CreateAccount(string username);
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
         void RemoveAccount(string username);
 
       //  [OperationContract]
