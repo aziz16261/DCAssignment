@@ -40,9 +40,9 @@ namespace Console1
         [FaultContract(typeof(ServerException))]
         void RemoveAccount(string username);
 
-      //  [OperationContract]
-       // [FaultContract(typeof(ServerException))]
-       // List<ChatRoom> GetChatRooms();
+       [OperationContract]
+        [FaultContract(typeof(ServerException))]
+        List<ChatRoom> GetChatRooms();
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]

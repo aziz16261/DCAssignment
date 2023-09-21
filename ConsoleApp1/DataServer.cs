@@ -22,6 +22,9 @@ namespace Console1
         string streamString, streamSize;
         byte[] data;
         int arraySize;
+
+        public List<ChatRoom> ChatRoomsList { get; set; } = new List<ChatRoom>();
+
         public DataServer()
         {
             database = new DatabaseClass();
@@ -72,19 +75,22 @@ namespace Console1
 
         public List<ChatRoom> CreateChatRoom(string roomName, List<ChatRoom> chatRoomsList)
         {
-            if (!chatRoomsList.Any(room => room.RoomName == roomName))
+            if (!ChatRoomsList.Any(room => room.RoomName == roomName))
             {
-                chatRoomsList.Add(new ChatRoom(roomName));
-                Console.WriteLine("new chat room created: " + roomName);
-                return chatRoomsList;
+                ChatRoomsList.Add(new ChatRoom(roomName));
+                Console.WriteLine("New chat room created: " + roomName);
+            }
+            else
+            {
+                Console.WriteLine("Chat room with the same name already exists: " + roomName);
             }
 
-            return null;
+            return ChatRoomsList; 
         }
 
         public List<ChatRoom> JoinChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList)
         {
-            ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+            ChatRoom chatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
             if (chatRoom != null)
             {
@@ -94,7 +100,7 @@ namespace Console1
                 {
                     chatRoom.Participants.Add(username);
                     Console.WriteLine("Added participant: " + username);
-                    return chatRoomsList;
+                    return ChatRoomsList;
                 }
                 else
                 {
@@ -111,7 +117,7 @@ namespace Console1
 
         public List<ChatRoom> LeaveChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList)
         {
-            ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+            ChatRoom chatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
             if (chatRoom != null)
             {
@@ -119,7 +125,7 @@ namespace Console1
                 {
                     chatRoom.Participants.Remove(username);
                     Console.WriteLine("removed participant from chat room: " + username);
-                    return chatRoomsList;
+                    return ChatRoomsList;
                 }
                 else
                 {
@@ -139,18 +145,18 @@ namespace Console1
             {
                 string roomName = "ChatRoom " + i;
 
-                if (!chatRoomsList.Any(room => room.RoomName == roomName))
+                if (!ChatRoomsList.Any(room => room.RoomName == roomName))
                 {
                     ChatRoom newChatRoom = new ChatRoom(roomName);
-                    chatRoomsList.Add(newChatRoom);
+                    ChatRoomsList.Add(newChatRoom);
                 }
             }
 
-            return chatRoomsList;
+            return ChatRoomsList;
         }
         public List<ChatRoom> SendMessage(string sender, string roomName, string message, List<ChatRoom> chatRoomsList)
         {
-            ChatRoom chatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+            ChatRoom chatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
             if (chatRoom != null)
             {
@@ -164,7 +170,7 @@ namespace Console1
 
                     Console.WriteLine("sender: " + sender + "\nmessage: " + message);
                     chatRoom.Messages.Add(newMessage);
-                    return chatRoomsList;
+                    return ChatRoomsList;
                 }
 
                 else
@@ -179,7 +185,7 @@ namespace Console1
             }
         }
 
-        // public List<ChatRoom> GetChatRooms() { return chatRoomsList; }
+         public List<ChatRoom> GetChatRooms() { return ChatRoomsList; }
 
         public ChatRoom GetChatRoom(string roomName, List<ChatRoom> chatRoomsList)
         {
