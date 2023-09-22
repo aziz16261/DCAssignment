@@ -46,6 +46,7 @@
     <Compile Include="ChatRoom.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DataStruct.cs" />
+    <Compile Include="FileInfo.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessageContent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

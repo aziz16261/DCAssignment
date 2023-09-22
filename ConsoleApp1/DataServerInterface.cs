@@ -40,7 +40,7 @@ namespace Console1
         [FaultContract(typeof(ServerException))]
         void RemoveAccount(string username);
 
-       [OperationContract]
+        [OperationContract]
         [FaultContract(typeof(ServerException))]
         List<ChatRoom> GetChatRooms();
 
@@ -54,7 +54,7 @@ namespace Console1
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        String UploadFile(string filePath);
+        String UploadFile(string filePath, ChatRoom currentChatroom);
     }
 
 }

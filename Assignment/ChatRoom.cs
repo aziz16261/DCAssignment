@@ -18,12 +18,15 @@ namespace DatabaseLib
         public List<string> Participants { get; set; }
         [DataMember]
         public List<Message> Messages { get; set; }
+        [DataMember]
+        public List<FileStore> Files { get; set; }
 
         public ChatRoom(string roomName)
         {
             RoomName = roomName;
             Participants = new List<string>();
             Messages = new List<Message>();
+            Files = new List<FileStore>();
         }
 
         public List<string> GetParticipants()

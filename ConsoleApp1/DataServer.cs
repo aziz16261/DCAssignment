@@ -18,10 +18,6 @@ namespace Console1
     public class DataServer : DataServerInterface
     {
         private DatabaseClass database;
-        IPAddress localAddr = IPAddress.Parse("192.168.56.1");
-        string streamString, streamSize;
-        byte[] data;
-        int arraySize;
 
         public List<ChatRoom> ChatRoomsList { get; set; } = new List<ChatRoom>();
 
@@ -207,40 +203,16 @@ namespace Console1
         /// <summary>
         /// This code below is for handling the file sharing, it doesn't work just yet, probably needs the buttons to be on seperate threads
         /// </summary>
-        public string UploadFile(string fileName)
+        public string UploadFile(string fileName, ChatRoom currentChatroom)
         {
             Console.WriteLine("Started upload process");
-            EstablishFileConnection(fileName);
-            TcpListener listener = new TcpListener(localAddr, 8102);
-            Console.WriteLine("Established listener for port 8102");
-            listener.Start();
-            TcpClient client = listener.AcceptTcpClient();
-            Console.WriteLine("Client connected for upload");
-            Stream stream = client.GetStream();
-            data = new byte[stream.Length];
-            stream.Read(data, 0, data.Length);
-            File.WriteAllBytes("localhost:" + "\\" + streamString.Substring(0, streamString.LastIndexOf('.')), data);
-            listener.Stop();
-            client.Close();
-
+            byte[] fileData = File.ReadAllBytes(fileName);
+            
+            FileStore newFile = new FileStore(fileName, fileData);
+            currentChatroom.Files.Add(newFile);
+            Console.WriteLine("Successfully added file " + fileName);
             return fileName;
         }
 
-        private void EstablishFileConnection(string filePath)
-        {
-            TcpListener list = new TcpListener(localAddr, 8101);
-            Console.WriteLine("Established listener for port 8101");
-            list.Start();
-            Console.WriteLine("Started listener for port 8101");
-            TcpClient client = list.AcceptTcpClient();
-            Console.WriteLine("Client trying to connect for file upload");
-            StreamReader sr = new StreamReader(client.GetStream());
-            streamString = sr.ReadLine();
-            streamSize = streamString.Substring(streamString.LastIndexOf('.') + 1);
-            arraySize = int.Parse(streamSize);
-            list.Stop();
-            client.Close();
-            
-        }
     }
 }

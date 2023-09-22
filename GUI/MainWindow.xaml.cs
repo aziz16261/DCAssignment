@@ -35,8 +35,6 @@ namespace GUI
 
         public bool IsLoggedIn = false;
 
-        private string storedFile;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -106,7 +104,7 @@ namespace GUI
 
                     if (chatRoomsList != null)
                     {
-                        chatRoomsList =foob.GetChatRooms();
+                        chatRoomsList = foob.GetChatRooms();
 
                         AvailableRooms.ItemsSource = null;
                         AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
@@ -258,31 +256,25 @@ namespace GUI
 
         private void FileTransfer_Click(object sender, RoutedEventArgs e)
         {
+            if (IsLoggedIn) {
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.Filter = "txt files |*.txt|Image files|*.jpg;*.jpeg;*.png;*.bmp";
+                dialog.CheckFileExists = true;
+                dialog.CheckPathExists = true;
+                dialog.Title = "Select file to upload";
+                dialog.ShowDialog();
 
-            storedFile = "C:\\Users\\Caio\\Desktop\\testFile.txt";
-            Console.WriteLine("Attempting to upload file");
+                string uploadedFile = dialog.FileName;
+                string username = NBox.Text;
+                ChatRoom userCurrentRoom = foob.GetChatRooms().FirstOrDefault(room => room.Participants.Contains(username));
 
-            
-            foob.UploadFile(storedFile);
-
-            FileInfo fi = new FileInfo(storedFile);
-            String fileInfo = fi.Name + "." + fi.Length;
-            Console.WriteLine("Stored file info");
-            TcpClient client = new TcpClient("localHost", 8102);
-            Console.WriteLine("Established client");
-            StreamWriter sw = new StreamWriter(client.GetStream());
-            Console.WriteLine("Established fileWriter");
-            sw.WriteLine(fileInfo);
-            sw.Flush();
+                MessageTextBox.Text = foob.UploadFile(uploadedFile, userCurrentRoom);
+                SendBox_Click(sender, e); 
+            }
         }
 
         private void FileTransferSendButton_Click(object sender, RoutedEventArgs e)
         {
-            TcpClient client = new TcpClient("localhost", 8101);
-            Stream clientStream = client.GetStream();
-            byte[] dataStream = File.ReadAllBytes(storedFile);
-            clientStream.Write(dataStream, 0, dataStream.Length);
-            client.Close();
            
         }
     }
