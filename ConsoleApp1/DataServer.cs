@@ -19,7 +19,9 @@ namespace Console1
     {
         private DatabaseClass database;
 
-        public List<ChatRoom> ChatRoomsList { get; set; } = new List<ChatRoom>();
+        public static List<ChatRoom> ChatRoomsList { get; private set; } = new List<ChatRoom>();
+        public event Action<List<ChatRoom>> ChatRoomsUpdated;
+
 
         public DataServer()
         {
@@ -71,9 +73,9 @@ namespace Console1
 
         public List<ChatRoom> CreateChatRoom(string roomName, List<ChatRoom> chatRoomsList)
         {
-            if (!ChatRoomsList.Any(room => room.RoomName == roomName))
+            if (!DataServer.ChatRoomsList.Any(room => room.RoomName == roomName))
             {
-                ChatRoomsList.Add(new ChatRoom(roomName));
+                DataServer.ChatRoomsList.Add(new ChatRoom(roomName));
                 Console.WriteLine("New chat room created: " + roomName);
             }
             else
@@ -81,12 +83,15 @@ namespace Console1
                 Console.WriteLine("Chat room with the same name already exists: " + roomName);
             }
 
-            return ChatRoomsList; 
+            ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
+
+            return DataServer.ChatRoomsList;
         }
+
 
         public List<ChatRoom> JoinChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList)
         {
-            ChatRoom chatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+            ChatRoom chatRoom = DataServer.ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
             if (chatRoom != null)
             {
@@ -96,44 +101,43 @@ namespace Console1
                 {
                     chatRoom.Participants.Add(username);
                     Console.WriteLine("Added participant: " + username);
-                    return ChatRoomsList;
                 }
                 else
                 {
                     Console.WriteLine("Participant already exists " + username);
-                    return null;
                 }
+
+             //   ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
             }
             else
             {
                 Console.WriteLine("Chat room not found: " + roomName);
-                return null;
             }
-        }
 
+            return ChatRoomsList;
+        }
         public List<ChatRoom> LeaveChatRoom(string roomName, string username, List<ChatRoom> chatRoomsList)
         {
-            ChatRoom chatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+            ChatRoom chatRoom = DataServer.ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
             if (chatRoom != null)
             {
                 if (chatRoom.Participants.Contains(username))
                 {
                     chatRoom.Participants.Remove(username);
-                    Console.WriteLine("removed participant from chat room: " + username);
-                    return ChatRoomsList;
+                    Console.WriteLine("Removed participant from chat room: " + username);
                 }
                 else
                 {
-                    Console.WriteLine("participant is not in chat room: " + username);
-                    return null;
+                    Console.WriteLine("Participant is not in chat room: " + username);
                 }
+
+              //  ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
             }
-            else
-            {
-                return null;
-            }
+
+            return DataServer.ChatRoomsList;
         }
+
 
         public List<ChatRoom> CreateInitialChatRooms(List<ChatRoom> chatRoomsList)
         {
@@ -141,18 +145,20 @@ namespace Console1
             {
                 string roomName = "ChatRoom " + i;
 
-                if (!ChatRoomsList.Any(room => room.RoomName == roomName))
+                if (!DataServer.ChatRoomsList.Any(room => room.RoomName == roomName))
                 {
                     ChatRoom newChatRoom = new ChatRoom(roomName);
-                    ChatRoomsList.Add(newChatRoom);
+                    DataServer.ChatRoomsList.Add(newChatRoom);
                 }
             }
+
+           // ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
 
             return ChatRoomsList;
         }
         public List<ChatRoom> SendMessage(string sender, string roomName, string message, List<ChatRoom> chatRoomsList)
         {
-            ChatRoom chatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
+            ChatRoom chatRoom = DataServer.ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
 
             if (chatRoom != null)
             {
@@ -164,24 +170,28 @@ namespace Console1
                         Content = message
                     };
 
-                    Console.WriteLine("sender: " + sender + "\nmessage: " + message);
+                    Console.WriteLine("Sender: " + sender + "\nMessage: " + message);
                     chatRoom.Messages.Add(newMessage);
-                    return ChatRoomsList;
-                }
 
+                  //  ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
+                }
                 else
                 {
-                    return null;
+                    Console.WriteLine("Sender is not a participant in the chat room: " + sender);
                 }
             }
-
             else
             {
-                return null;
+                Console.WriteLine("Chat room not found: " + roomName);
             }
+
+            return DataServer.ChatRoomsList;
         }
 
-         public List<ChatRoom> GetChatRooms() { return ChatRoomsList; }
+        public List<ChatRoom> GetChatRooms()
+        {
+            return DataServer.ChatRoomsList;
+        }
 
         public ChatRoom GetChatRoom(string roomName, List<ChatRoom> chatRoomsList)
         {
@@ -198,6 +208,13 @@ namespace Console1
             }
 
             return chatRoom;
+        }
+
+        public async Task<List<ChatRoom>> GetChatRoomsAsync()
+        {
+            // Simulate an asynchronous operation (e.g., fetching chat rooms from a database)
+            await Task.Delay(100);
+            return DataServer.ChatRoomsList;
         }
 
         /// <summary>

@@ -23,6 +23,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.Reflection.Emit;
+using System.Windows.Threading;
 
 namespace GUI
 {
@@ -32,6 +33,7 @@ namespace GUI
     public partial class MainWindow : Window
     {
         private DataServerInterface foob;
+        private DispatcherTimer refreshTimer;
 
         public bool IsLoggedIn = false;
 
@@ -47,13 +49,17 @@ namespace GUI
             tcp.CloseTimeout = new TimeSpan(0, 20, 0);
             tcp.SendTimeout = new TimeSpan(0, 20, 0);
             tcp.ReceiveTimeout = new TimeSpan(0, 20, 0);
-            //Set the URL and create the connection!
 
             string URL = "net.tcp://localhost:8100/ChatServer";
             foobFactory = new ChannelFactory<DataServerInterface>(tcp, URL);
             foob = foobFactory.CreateChannel();
 
             AvailableRooms.ItemsSource = foob.CreateInitialChatRooms(new List<ChatRoom>()).Select(room => room.RoomName);
+
+            refreshTimer = new DispatcherTimer();
+            refreshTimer.Interval = TimeSpan.FromSeconds(10); 
+            refreshTimer.Tick += RefreshTimer_Tick;
+            refreshTimer.Start();
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -100,7 +106,7 @@ namespace GUI
                 }
                 else
                 {
-                    chatRoomsList = foob.CreateChatRoom(roomName, chatRoomsList); 
+                    chatRoomsList = foob.CreateChatRoom(roomName, chatRoomsList);
 
                     if (chatRoomsList != null)
                     {
@@ -128,7 +134,8 @@ namespace GUI
                 string selectedRoom = AvailableRooms.SelectedItem.ToString();
                 string username = NBox.Text;
 
-                List<ChatRoom> chatRoomsList = foob.GetChatRooms(); 
+                // Access the shared ChatRoomsList directly from DataServer
+                List<ChatRoom> chatRoomsList = DataServer.ChatRoomsList;
 
                 if (chatRoomsList == null)
                 {
@@ -144,7 +151,7 @@ namespace GUI
                     }
                     else
                     {
-                        chatRoomsList = foob.JoinChatRoom(selectedRoom, username, chatRoomsList); 
+                        chatRoomsList = foob.JoinChatRoom(selectedRoom, username, chatRoomsList);
 
                         if (IsLoggedIn == true)
                         {
@@ -175,7 +182,7 @@ namespace GUI
             string roomName = chatroom_name_Block.Text;
             string message = MessageTextBox.Text;
 
-            List<ChatRoom> chatRoomsList = foob.GetChatRooms(); 
+            List<ChatRoom> chatRoomsList = foob.GetChatRooms();
 
             if (IsLoggedIn == true)
             {
@@ -194,7 +201,7 @@ namespace GUI
                             chatBox.Text = string.Join(Environment.NewLine, updatedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
                             MessageTextBox.Clear();
 
-                            chatRoomsList = updatedChatRoomsList; 
+                            chatRoomsList = updatedChatRoomsList;
                         }
                         else
                         {
@@ -237,7 +244,6 @@ namespace GUI
                     AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
                     chatBox.Clear();
 
-                    // Do not update any global ChatRoomsList; only update the local variable
                 }
                 else
                 {
@@ -256,7 +262,8 @@ namespace GUI
 
         private void FileTransfer_Click(object sender, RoutedEventArgs e)
         {
-            if (IsLoggedIn) {
+            if (IsLoggedIn)
+            {
                 OpenFileDialog dialog = new OpenFileDialog();
                 dialog.Filter = "txt files |*.txt|Image files|*.jpg;*.jpeg;*.png;*.bmp";
                 dialog.CheckFileExists = true;
@@ -269,13 +276,49 @@ namespace GUI
                 ChatRoom userCurrentRoom = foob.GetChatRooms().FirstOrDefault(room => room.Participants.Contains(username));
 
                 MessageTextBox.Text = foob.UploadFile(uploadedFile, userCurrentRoom);
-                SendBox_Click(sender, e); 
+                SendBox_Click(sender, e);
             }
         }
 
         private void FileTransferSendButton_Click(object sender, RoutedEventArgs e)
         {
-           
+
+        }
+
+        private void RefreshChatRoomsAndMessages()
+        {
+            // Periodically refresh the list of chat rooms and messages
+            List<ChatRoom> chatRoomsList = foob.GetChatRooms();
+
+            if (chatRoomsList != null)
+            {
+                // Update the UI with the list of chat rooms
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
+
+                    // Check if a chat room is selected
+                    if (AvailableRooms.SelectedItem != null)
+                    {
+                        string selectedRoom = AvailableRooms.SelectedItem.ToString();
+
+                        // Find the selected chat room
+                        ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == selectedRoom);
+
+                        if (selectedChatRoom != null)
+                        {
+                            // Display messages for the selected chat room
+                            chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
+                        }
+                    }
+                });
+            }
+        }
+
+        private void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            // Call the method to refresh chat rooms and messages
+            RefreshChatRoomsAndMessages();
         }
     }
 }
