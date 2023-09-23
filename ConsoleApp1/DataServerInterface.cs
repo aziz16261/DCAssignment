@@ -18,6 +18,14 @@ namespace Console1
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
+        void SendPrivateMessage(string sender, string receiver, string message);
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
+        List<ChatRoom> CreatePrivateChatRoom(string sender, string receiver);
+
+        [OperationContract]
+        [FaultContract(typeof(ServerException))]
         List<ChatRoom> CreateChatRoom(string roomName, List<ChatRoom> chatRoomsList);
 
         [OperationContract]
@@ -42,7 +50,7 @@ namespace Console1
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        List<ChatRoom> GetChatRooms();
+        List<ChatRoom> GetChatRooms(string username);
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]

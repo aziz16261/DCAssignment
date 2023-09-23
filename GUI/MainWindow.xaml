@@ -14,19 +14,6 @@
         <Button x:Name="LoginButton" Content="Log in!" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top" Height="48" Width="83" RenderTransformOrigin="0.075,0.061" Click="LoginButton_Click"/>
         <TextBox x:Name="NBox" HorizontalAlignment="Left" Margin="10,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="176" Height="36"/>
         <TextBlock x:Name="Username" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="username" VerticalAlignment="Top" Height="21" Width="176"/>
-        <TextBox x:Name="PortBox" HorizontalAlignment="Left" Margin="411,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132" Height="36"/>
-        <TextBox x:Name="IPBox" HorizontalAlignment="Left" Margin="599,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184" Height="36" RenderTransformOrigin="0.5,0.5">
-            <TextBox.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="-0.06"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </TextBox.RenderTransform>
-        </TextBox>
-        <TextBlock HorizontalAlignment="Left" Margin="380,32,0,0" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" Height="22" Width="64" RenderTransformOrigin="-0.102,0.323"/>
-        <TextBlock HorizontalAlignment="Left" Margin="575,35,0,0" TextWrapping="Wrap" Text="IP" VerticalAlignment="Top" Height="22" Width="64" RenderTransformOrigin="-0.102,0.323"/>
         <TextBox x:Name="chatBox" IsReadOnly="True" HorizontalAlignment="Left" Height="284" Margin="209,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="581"/>
         <TextBox x:Name="MessageTextBox" TextWrapping="Wrap" Margin="209,363,121,10"/>
         <Button x:Name="LogoutButton" Content="Log Out!" HorizontalAlignment="Left" Margin="103,74,0,0" VerticalAlignment="Top" Height="48" Width="83" RenderTransformOrigin="0.755,1.161" Click="LogoutButton_Click_1"/>
@@ -52,8 +39,12 @@
             </ListView.View>
         </ListView>
         <ListBox x:Name="AvailableRooms" HorizontalAlignment="Left" Height="184" Margin="12,222,0,0" VerticalAlignment="Top" Width="174" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="ListBox_SelectionChanged"/>
-        <Button x:Name="LeaveChatRoom" Content="Leave Chat Room" HorizontalAlignment="Left" Margin="209,10,0,0" VerticalAlignment="Top" Height="29" Width="106" Click="LeaveChatRoom_Click"/>
+        <Button x:Name="LeaveChatRoom" Content="Leave Chat Room" HorizontalAlignment="Left" Margin="573,10,0,0" VerticalAlignment="Top" Height="59" Width="106" Click="LeaveChatRoom_Click"/>
         <Button x:Name="FileTransfer" Content="File Upload Test" HorizontalAlignment="Left" Height="23" Margin="684,291,0,0" VerticalAlignment="Top" Width="101" Click="FileTransfer_Click"/>
         <Button x:Name="FileTransferSendButton" Content="File upload send" HorizontalAlignment="Left" Height="39" Margin="684,319,0,0" VerticalAlignment="Top" Width="101" Click="FileTransferSendButton_Click"/>
+        <Button x:Name="RefreshButton" Content="Refresh" HorizontalAlignment="Left" Margin="684,10,0,0" VerticalAlignment="Top" Height="59" Width="106" Click="RefreshButton_Click"/>
+        <Button x:Name="PrivateMessageButton" Content="PrivateMessage" HorizontalAlignment="Left" Margin="462,10,0,0" VerticalAlignment="Top" Height="58" Width="106" Click="PrivateMessage_click" RenderTransformOrigin="0.877,0.488"/>
+        <TextBox x:Name="PMRecieverName" HorizontalAlignment="Left" Margin="324,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="133" Height="25"/>
+        <TextBlock x:Name="PMPersonName" HorizontalAlignment="Left" Margin="327,20,0,0" TextWrapping="Wrap" Text="PrivateMessagePerson" VerticalAlignment="Top" Width="130"/>
     </Grid>
 </Window>

@@ -17,57 +17,45 @@ namespace Console1
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     public class DataServer : DataServerInterface
     {
-        private DatabaseClass database;
-
         public static List<ChatRoom> ChatRoomsList { get; private set; } = new List<ChatRoom>();
         public event Action<List<ChatRoom>> ChatRoomsUpdated;
-
-
-        public DataServer()
-        {
-            database = new DatabaseClass();
-        }
+        public static List<Username> UsernamesList { get; private set; } = new List<Username>();
 
         public bool CheckAccount(string username)
         {
-            List<DatabaseStorage.DataStruct> dataStructList = database.GetDataStructList();
-
-            foreach (var data in dataStructList)
+            if (UsernamesList.Any(user => user.Name == username))
             {
-                if (data.AcctUsername == username)
-                {
-                    Console.WriteLine("username already exists: " + username);
-                    return true;
-                }
+                Console.WriteLine("Username already exists: " + username);
+                return true;
             }
-
 
             return false;
         }
 
         public void CreateAccount(string username)
         {
-
             if (!CheckAccount(username))
             {
                 Console.WriteLine("Logging in as: " + username);
                 Console.WriteLine("Added account " + username);
-                database.AddUser(username);
+
+                Username newUser = new Username(username);
+                UsernamesList.Add(newUser);
             }
         }
 
         public void RemoveAccount(string username)
         {
-            List<DatabaseStorage.DataStruct> dataStructList = database.GetDataStructList();
+            var userToRemove = UsernamesList.FirstOrDefault(user => user.Name == username);
 
-            foreach (var data in dataStructList)
+            if (userToRemove != null)
             {
-                if (data.AcctUsername == username)
-                {
-                    Console.WriteLine("logged out: " + username);
-                    database.RemoveUser(username);
-                    return;
-                }
+                Console.WriteLine("Logged out: " + username);
+                UsernamesList.Remove(userToRemove);
+            }
+            else
+            {
+                Console.WriteLine("Username not found: " + username);
             }
         }
 
@@ -107,7 +95,7 @@ namespace Console1
                     Console.WriteLine("Participant already exists " + username);
                 }
 
-             //   ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
+                ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
             }
             else
             {
@@ -132,12 +120,11 @@ namespace Console1
                     Console.WriteLine("Participant is not in chat room: " + username);
                 }
 
-              //  ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
+                ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
             }
 
-            return DataServer.ChatRoomsList;
+            return ChatRoomsList.Where(room => room.Participants.Contains(username) || !room.IsPrivate).ToList();
         }
-
 
         public List<ChatRoom> CreateInitialChatRooms(List<ChatRoom> chatRoomsList)
         {
@@ -152,10 +139,11 @@ namespace Console1
                 }
             }
 
-           // ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
+            ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
 
             return ChatRoomsList;
         }
+
         public List<ChatRoom> SendMessage(string sender, string roomName, string message, List<ChatRoom> chatRoomsList)
         {
             ChatRoom chatRoom = DataServer.ChatRoomsList.FirstOrDefault(room => room.RoomName == roomName);
@@ -173,7 +161,7 @@ namespace Console1
                     Console.WriteLine("Sender: " + sender + "\nMessage: " + message);
                     chatRoom.Messages.Add(newMessage);
 
-                  //  ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
+                    ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
                 }
                 else
                 {
@@ -188,9 +176,9 @@ namespace Console1
             return DataServer.ChatRoomsList;
         }
 
-        public List<ChatRoom> GetChatRooms()
+        public List<ChatRoom> GetChatRooms(string username)
         {
-            return DataServer.ChatRoomsList;
+            return ChatRoomsList.Where(room => room.Participants.Contains(username) || !room.IsPrivate).ToList();
         }
 
         public ChatRoom GetChatRoom(string roomName, List<ChatRoom> chatRoomsList)
@@ -208,6 +196,54 @@ namespace Console1
             }
 
             return chatRoom;
+        }
+
+        public void SendPrivateMessage(string sender, string receiver, string message)
+        {
+            string privateRoomName = $"{sender}_{receiver}";
+
+            ChatRoom privateChatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == privateRoomName);
+            if (privateChatRoom == null)
+            {
+                CreatePrivateChatRoom(sender, receiver);
+                privateChatRoom = ChatRoomsList.FirstOrDefault(room => room.RoomName == privateRoomName);
+            }
+
+            if (privateChatRoom != null)
+            {
+                Message newMessage = new Message
+                {
+                    Sender = sender,
+                    Content = message
+                };
+
+                privateChatRoom.Messages.Add(newMessage);
+                Console.WriteLine(sender + " " + newMessage);
+                ChatRoomsUpdated?.Invoke(ChatRoomsList);
+            }
+        }
+
+        public List<ChatRoom> CreatePrivateChatRoom(string sender, string receiver)
+        {
+            string privateRoomName = $"{sender}_{receiver}";
+
+            if (!ChatRoomsList.Any(room => room.RoomName == privateRoomName))
+            {
+                ChatRoom privateChatRoom = new ChatRoom(privateRoomName)
+                {
+                    IsPrivate = true
+                };
+
+                privateChatRoom.Participants.Add(sender);
+                privateChatRoom.Participants.Add(receiver);
+
+                ChatRoomsList.Add(privateChatRoom);
+                Console.WriteLine("Added " + sender + ", " + receiver + " to the private room " + privateRoomName);
+            }
+
+            ChatRoomsUpdated?.Invoke(ChatRoomsList);
+
+            return ChatRoomsList;
         }
 
         public async Task<List<ChatRoom>> GetChatRoomsAsync()
@@ -230,6 +266,5 @@ namespace Console1
             Console.WriteLine("Successfully added file " + fileName);
             return fileName;
         }
-
     }
 }
