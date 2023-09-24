@@ -34,25 +34,10 @@ namespace DatabaseLib
             IsPrivate = false;
         }
 
-        public List<string> GetParticipants()
-        {
-            return Participants;
-        }
-
         public string GetParticipantsAsString()
         {
             string participantsList = string.Join(", ", Participants);
             return participantsList;
-        }
-
-        public List<PrivateMessage> GetPrivateMessages(string sender, string receiver)
-        {
-            return Messages
-                .Where(msg =>
-                    (msg.Sender == sender && Participants.Contains(receiver)) ||
-                    (msg.Sender == receiver && Participants.Contains(sender)))
-                .Select(msg => new PrivateMessage { Sender = msg.Sender, Content = msg.Content })
-                .ToList();
         }
     }
 }

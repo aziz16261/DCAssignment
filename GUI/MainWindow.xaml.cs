@@ -55,7 +55,7 @@ namespace GUI
             AvailableRooms.ItemsSource = foob.CreateInitialChatRooms(new List<ChatRoom>()).Select(room => room.RoomName);
 
             refreshTimer = new DispatcherTimer();
-            refreshTimer.Interval = TimeSpan.FromSeconds(10); 
+            refreshTimer.Interval = TimeSpan.FromSeconds(4); 
             refreshTimer.Tick += RefreshTimer_Tick;
             refreshTimer.Start();
         }
@@ -70,6 +70,7 @@ namespace GUI
             {
                 NBox.Text = "Username already exists.";
             }
+
             else
             {
                 foob.CreateAccount(username);
@@ -105,9 +106,9 @@ namespace GUI
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string roomName = roomName_txt.Text;
-            bool usernameExists = foob.CheckAccount(Username.Text);
+            bool usernameExists = foob.CheckAccount(NBox.Text);
 
-            if(!usernameExists)
+            if(usernameExists)
             {
                 List<ChatRoom> chatRoomsList = foob.GetChatRooms(NBox.Text);
 
@@ -144,33 +145,33 @@ namespace GUI
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (AvailableRooms.SelectedItem != null)
+            bool usernameExists = foob.CheckAccount(NBox.Text);
+
+            if (usernameExists)
             {
-                string selectedRoom = AvailableRooms.SelectedItem.ToString();
-                string username = NBox.Text;
-
-                // Access the shared ChatRoomsList directly from DataServer
-                List<ChatRoom> chatRoomsList = DataServer.ChatRoomsList;
-
-                if (chatRoomsList == null)
+                if (AvailableRooms.SelectedItem != null)
                 {
-                    MessageBox.Show("Failed to retrieve chat rooms", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else
-                {
-                    ChatRoom userCurrentRoom = chatRoomsList.FirstOrDefault(room => room.Participants.Contains(username));
+                    string selectedRoom = AvailableRooms.SelectedItem.ToString();
+                    string username = NBox.Text;
 
-                    if (userCurrentRoom != null)
+                    List<ChatRoom> chatRoomsList = DataServer.ChatRoomsList;
+
+                    if (chatRoomsList == null)
                     {
-                        MessageBox.Show("You are already a participant in a different room. Please leave the current room if you want to join this one.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("Failed to retrieve chat rooms", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     else
                     {
-                        chatRoomsList = foob.JoinChatRoom(selectedRoom, username, chatRoomsList);
-                        bool usernameExists = foob.CheckAccount(Username.Text);
+                        ChatRoom userCurrentRoom = chatRoomsList.FirstOrDefault(room => room.Participants.Contains(username));
 
-                        if (!usernameExists)
+                        if (userCurrentRoom != null)
                         {
+                            MessageBox.Show("You are already a participant in a different room. Please leave the current room if you want to join this one.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                        else
+                        {
+                            chatRoomsList = foob.JoinChatRoom(selectedRoom, username, chatRoomsList);
+
                             ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == selectedRoom);
 
                             if (selectedChatRoom != null)
@@ -187,12 +188,17 @@ namespace GUI
                                 Console.WriteLine("Selected chat room not found in chatRoomsList");
                             }
                         }
-
-                        AvailableRooms.SelectedItem = null;
                     }
                 }
             }
+
+            else
+            {
+                AvailableRooms.SelectedIndex = -1;
+                MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
         private void SendBox_Click(object sender, RoutedEventArgs e)
         {
             string roomName = chatroom_name_Block.Text;
@@ -200,9 +206,9 @@ namespace GUI
 
             List<ChatRoom> chatRoomsList = foob.GetChatRooms(NBox.Text);
 
-            bool usernameExists = foob.CheckAccount(Username.Text);
+            bool usernameExists = foob.CheckAccount(NBox.Text);
 
-            if (!usernameExists)
+            if(usernameExists)
             { 
                 ChatRoom userChatRoom = chatRoomsList.FirstOrDefault(room => room.Participants.Contains(NBox.Text));
 
@@ -244,14 +250,14 @@ namespace GUI
 
         private void LeaveChatRoom_Click(object sender, RoutedEventArgs e)
         {
-            bool usernameExists = foob.CheckAccount(Username.Text);
+            bool usernameExists = foob.CheckAccount(NBox.Text);
 
-            if (!usernameExists)
+            if (usernameExists)
             {
                 string roomName = chatroom_name_Block.Text;
                 string username = NBox.Text;
 
-                List<ChatRoom> chatRoomsList = foob.GetChatRooms(Username.Text).Where(room => !room.IsPrivate).ToList();
+                List<ChatRoom> chatRoomsList = foob.GetChatRooms(Username.Text);
 
                 chatRoomsList = foob.LeaveChatRoom(roomName, username, chatRoomsList);
 
@@ -281,9 +287,9 @@ namespace GUI
 
         private void FileTransfer_Click(object sender, RoutedEventArgs e)
         {
-            bool usernameExists = foob.CheckAccount(Username.Text);
+            bool usernameExists = foob.CheckAccount(NBox.Text);
 
-            if (!usernameExists)
+            if (usernameExists)
             {
                 OpenFileDialog dialog = new OpenFileDialog();
                 dialog.Filter = "txt files |*.txt|Image files|*.jpg;*.jpeg;*.png;*.bmp";
@@ -308,29 +314,24 @@ namespace GUI
 
         private void RefreshChatRoomsAndMessages()
         {
-            // Periodically refresh the list of chat rooms and messages
             List<ChatRoom> chatRoomsList = foob.GetChatRooms(NBox.Text);
 
             if (chatRoomsList != null)
             {
-                // Update the UI with the list of chat rooms
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
 
-                    // Check if a chat room is selected
-                    if (AvailableRooms.SelectedItem != null)
+                   string chatRoomName = chatroom_name_Block.Text;
+                   ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == chatRoomName);
+                        
+                    if (selectedChatRoom != null)
                     {
-                        string selectedRoom = AvailableRooms.SelectedItem.ToString();
+                        chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
 
-                        // Find the selected chat room
-                        ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == selectedRoom);
+                        currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
 
-                        if (selectedChatRoom != null)
-                        {
-                            // Display messages for the selected chat room
-                            chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
-                        }
+                        AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
                     }
                 });
             }
@@ -348,9 +349,9 @@ namespace GUI
             string receiverUsername = PMRecieverName.Text;
             string message = MessageTextBox.Text;
 
-            bool usernameExists = foob.CheckAccount(Username.Text);
+            bool usernameExists = foob.CheckAccount(NBox.Text);
 
-            if (!usernameExists)
+            if (usernameExists)
             {
                 if (string.IsNullOrWhiteSpace(receiverUsername))
                 {
@@ -388,9 +389,9 @@ namespace GUI
             string senderUsername = NBox.Text;
             List<ChatRoom> chatRoomsList = foob.GetChatRooms(senderUsername);
 
-            bool usernameExists = foob.CheckAccount(Username.Text);
+            bool usernameExists = foob.CheckAccount(NBox.Text);
 
-            if (!usernameExists)
+            if (usernameExists)
             {
                 if (chatRoomsList != null)
                 {

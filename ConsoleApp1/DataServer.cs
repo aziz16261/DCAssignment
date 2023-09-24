@@ -25,7 +25,7 @@ namespace Console1
         {
             if (UsernamesList.Any(user => user.Name == username))
             {
-                Console.WriteLine("Username already exists: " + username);
+                Console.WriteLine("User exists: " + username);
                 return true;
             }
 
@@ -244,13 +244,6 @@ namespace Console1
             ChatRoomsUpdated?.Invoke(ChatRoomsList);
 
             return ChatRoomsList;
-        }
-
-        public async Task<List<ChatRoom>> GetChatRoomsAsync()
-        {
-            // Simulate an asynchronous operation (e.g., fetching chat rooms from a database)
-            await Task.Delay(100);
-            return DataServer.ChatRoomsList;
         }
 
         /// <summary>
