@@ -390,24 +390,23 @@ namespace GUI
 
             bool usernameExists = foob.CheckAccount(Username.Text);
 
-            if(!usernameExists)
+            if (!usernameExists)
             {
                 if (chatRoomsList != null)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
+                        string chatRoomName = chatroom_name_Block.Text; 
 
-                        if (AvailableRooms.SelectedItem != null)
+                        ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == chatRoomName);
+
+                        if (selectedChatRoom != null)
                         {
-                            string selectedRoom = AvailableRooms.SelectedItem.ToString();
+                            chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
 
-                            ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == selectedRoom);
+                            currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
 
-                            if (selectedChatRoom != null)
-                            {
-                                chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
-                            }
+                            AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
                         }
                     });
                 }
