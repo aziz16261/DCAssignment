@@ -33,7 +33,7 @@ namespace GUI
     public partial class MainWindow : Window
     {
         private DataServerInterface foob;
-        private DispatcherTimer refreshTimer;
+        //  private DispatcherTimer refreshTimer;
 
         public MainWindow()
         {
@@ -54,10 +54,13 @@ namespace GUI
 
             AvailableRooms.ItemsSource = foob.CreateInitialChatRooms(new List<ChatRoom>()).Select(room => room.RoomName);
 
-            refreshTimer = new DispatcherTimer();
-            refreshTimer.Interval = TimeSpan.FromSeconds(4); 
-            refreshTimer.Tick += RefreshTimer_Tick;
-            refreshTimer.Start();
+            //  refreshTimer = new DispatcherTimer();
+            //  refreshTimer.Interval = TimeSpan.FromSeconds(4); 
+            //  refreshTimer.Tick += RefreshTimer_Tick;
+            //   refreshTimer.Start();
+
+            Task.Run(() => StartUpdatingChatRooms());
+
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -112,7 +115,7 @@ namespace GUI
             string roomName = roomName_txt.Text;
             bool usernameExists = foob.CheckAccount(NBox.Text);
 
-            if(usernameExists)
+            if (usernameExists)
             {
                 List<ChatRoom> chatRoomsList = foob.GetChatRooms(NBox.Text);
 
@@ -149,28 +152,27 @@ namespace GUI
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            bool usernameExists = foob.CheckAccount(NBox.Text);
+            string username = null;
+            Dispatcher.Invoke(() =>
+            {
+                username = NBox.Text;
+            });
 
-            if (usernameExists)
+            if (!string.IsNullOrEmpty(username))
             {
                 if (AvailableRooms.SelectedItem != null)
                 {
                     string selectedRoom = AvailableRooms.SelectedItem.ToString();
-                    string username = NBox.Text;
 
                     List<ChatRoom> chatRoomsList = DataServer.ChatRoomsList;
 
-                    if (chatRoomsList == null)
-                    {
-                        MessageBox.Show("Failed to retrieve chat rooms", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    else
+                    if (chatRoomsList != null)
                     {
                         ChatRoom userCurrentRoom = chatRoomsList.FirstOrDefault(room => room.Participants.Contains(username));
 
                         if (userCurrentRoom != null)
                         {
-                            MessageBox.Show("You are already a participant in a different room. Please leave the current room if you want to join this one.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MessageBox.Show("You are already a participant in a different room, Please leave the current room if you want to join this one", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
                         else
                         {
@@ -181,10 +183,8 @@ namespace GUI
                             if (selectedChatRoom != null)
                             {
                                 chatroom_name_Block.Text = selectedChatRoom.RoomName;
-
                                 Console.WriteLine("Participants: " + selectedChatRoom.GetParticipantsAsString());
                                 Console.WriteLine("Participants count: " + selectedChatRoom.Participants.Count);
-
                                 currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
                             }
                             else
@@ -193,13 +193,19 @@ namespace GUI
                             }
                         }
                     }
+                    else
+                    {
+                        MessageBox.Show("Failed to retrieve chat rooms", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
-
             else
             {
-                AvailableRooms.SelectedIndex = -1;
-                MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Dispatcher.Invoke(() =>
+                {
+                    AvailableRooms.SelectedIndex = -1;
+                    MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
         }
 
@@ -212,8 +218,8 @@ namespace GUI
 
             bool usernameExists = foob.CheckAccount(NBox.Text);
 
-            if(usernameExists)
-            { 
+            if (usernameExists)
+            {
                 ChatRoom userChatRoom = chatRoomsList.FirstOrDefault(room => room.Participants.Contains(NBox.Text));
 
                 if (userChatRoom != null)
@@ -316,36 +322,35 @@ namespace GUI
 
         }
 
-        private void RefreshChatRoomsAndMessages()
-        {
-            List<ChatRoom> chatRoomsList = foob.GetChatRooms(NBox.Text);
-
-            if (chatRoomsList != null)
+        /*    private void RefreshChatRoomsAndMessages()
             {
-                Application.Current.Dispatcher.Invoke(() =>
+                List<ChatRoom> chatRoomsList = foob.GetChatRooms(NBox.Text);
+
+                if (chatRoomsList != null)
                 {
-                    AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
-
-                   string chatRoomName = chatroom_name_Block.Text;
-                   ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == chatRoomName);
-                        
-                    if (selectedChatRoom != null)
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
-
-                        currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
-
                         AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
-                    }
-                });
-            }
-        }
 
-        private void RefreshTimer_Tick(object sender, EventArgs e)
-        {
-            // Call the method to refresh chat rooms and messages
-            RefreshChatRoomsAndMessages();
-        }
+                       string chatRoomName = chatroom_name_Block.Text;
+                       ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == chatRoomName);
+
+                        if (selectedChatRoom != null)
+                        {
+                            chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
+
+                            currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
+
+                            AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
+                        }
+                    });
+                }
+            }
+
+            private void RefreshTimer_Tick(object sender, EventArgs e)
+            {
+                RefreshChatRoomsAndMessages();
+            } */
 
         private void PrivateMessage_click(object sender, RoutedEventArgs e)
         {
@@ -390,36 +395,73 @@ namespace GUI
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            string senderUsername = NBox.Text;
+            string senderUsername = null;
+
+            Dispatcher.Invoke(() =>
+            {
+                senderUsername = NBox.Text;
+            });
+
             List<ChatRoom> chatRoomsList = foob.GetChatRooms(senderUsername);
 
-            bool usernameExists = foob.CheckAccount(NBox.Text);
+            bool usernameExists = foob.CheckAccount(senderUsername);
 
             if (usernameExists)
             {
                 if (chatRoomsList != null)
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
+                    string chatRoomName = chatroom_name_Block.Text;
+                    ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == chatRoomName);
+                    AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
+
+                    if (selectedChatRoom != null)
                     {
-                        string chatRoomName = chatroom_name_Block.Text; 
-
-                        ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == chatRoomName);
-
-                        if (selectedChatRoom != null)
+                        Dispatcher.Invoke(() =>
                         {
-                            chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
-
                             currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
-
-                            AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
-                        }
-                    });
+                            chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
+                        });
+                    }
                 }
             }
-
             else
             {
                 MessageBox.Show("User is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+
+        private async void StartUpdatingChatRooms()
+        {
+            while (true)
+            {
+                await UpdateChatRoomsAsync();
+                await Task.Delay(TimeSpan.FromSeconds(5)); 
+            }
+        }
+
+        private async Task UpdateChatRoomsAsync()
+        {
+            string username = null;
+
+            Dispatcher.Invoke(() =>
+            {
+                username = NBox.Text;
+            });
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                List<ChatRoom> chatRoomsList = await Task.Run(() => foob.GetChatRooms(username));
+
+                if (chatRoomsList != null)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        AvailableRooms.ItemsSource = null;
+                        AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
+                    });
+                }
             }
         }
     }

@@ -181,6 +181,12 @@ namespace Console1
             return ChatRoomsList.Where(room => room.Participants.Contains(username) || !room.IsPrivate).ToList();
         }
 
+        public List<ChatRoom> GetChatRoomss()
+        {
+            return ChatRoomsList;
+        }
+
+
         public ChatRoom GetChatRoom(string roomName, List<ChatRoom> chatRoomsList)
         {
             ChatRoom chatRoom = null;
