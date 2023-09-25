@@ -68,7 +68,11 @@ namespace GUI
 
             if (usernameExists)
             {
-                NBox.Text = "Username already exists.";
+                MessageBox.Show("User already exists", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if (string.IsNullOrEmpty(username))
+            {
+                MessageBox.Show("Please enter username", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             else
