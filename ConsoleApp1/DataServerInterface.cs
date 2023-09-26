@@ -66,7 +66,7 @@ namespace Console1
 
         [OperationContract]
         [FaultContract(typeof(ServerException))]
-        String UploadFile(string filePath, ChatRoom currentChatroom);
+        string UploadFile(string filePath, string currentChatroom);
     }
 
 }

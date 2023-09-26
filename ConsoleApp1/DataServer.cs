@@ -255,13 +255,14 @@ namespace Console1
         /// <summary>
         /// This code below is for handling the file sharing, it doesn't work just yet, probably needs the buttons to be on seperate threads
         /// </summary>
-        public string UploadFile(string fileName, ChatRoom currentChatroom)
+        public string UploadFile(string filePath, string currentChatroom)
         {
             Console.WriteLine("Started upload process");
-            byte[] fileData = File.ReadAllBytes(fileName);
+            byte[] fileData = File.ReadAllBytes(filePath);
+            string fileName = Path.GetFileName(filePath);
             
             FileStore newFile = new FileStore(fileName, fileData);
-            currentChatroom.Files.Add(newFile);
+            GetChatRoom(currentChatroom, ChatRoomsList).Files.Add(newFile);
             Console.WriteLine("Successfully added file " + fileName);
             return fileName;
         }

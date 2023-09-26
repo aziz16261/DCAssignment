@@ -310,16 +310,35 @@ namespace GUI
 
                 string uploadedFile = dialog.FileName;
                 string username = NBox.Text;
-                ChatRoom userCurrentRoom = foob.GetChatRooms(NBox.Text).FirstOrDefault(room => room.Participants.Contains(username));
+                string userCurrentRoom = chatroom_name_Block.Text;
 
                 MessageTextBox.Text = foob.UploadFile(uploadedFile, userCurrentRoom);
-                SendBox_Click(sender, e);
             }
         }
 
         private void FileTransferSendButton_Click(object sender, RoutedEventArgs e)
         {
+            FileDisplay fileWindow = new FileDisplay();
+            string username = NBox.Text;
+            string listonames = "";
+            ChatRoom userCurrentRoom = foob.GetChatRoom(chatroom_name_Block.Text, foob.GetChatRooms(username));
+            if (userCurrentRoom != null)
+            {
 
+                if (userCurrentRoom.Files != null)
+                {
+                    int count = userCurrentRoom.Files.Count;
+                    listonames = count.ToString();
+                    foreach (FileStore file in userCurrentRoom.Files)
+                    {
+
+                        listonames += file.fileName + "\n";
+                    }
+
+                    fileWindow.setChatRoom(userCurrentRoom);
+                    fileWindow.Show();
+                }
+            }
         }
 
         /*    private void RefreshChatRoomsAndMessages()
