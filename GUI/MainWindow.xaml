@@ -46,5 +46,6 @@
         <Button x:Name="PrivateMessageButton" Content="PrivateMessage" HorizontalAlignment="Left" Margin="462,10,0,0" VerticalAlignment="Top" Height="58" Width="106" Click="PrivateMessage_click" RenderTransformOrigin="0.877,0.488"/>
         <TextBox x:Name="PMRecieverName" HorizontalAlignment="Left" Margin="324,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="133" Height="25"/>
         <TextBlock x:Name="PMPersonName" HorizontalAlignment="Left" Margin="327,20,0,0" TextWrapping="Wrap" Text="PrivateMessagePerson" VerticalAlignment="Top" Width="130"/>
+        <DocumentViewer Grid.Column="1"/>
     </Grid>
 </Window>

@@ -159,7 +159,7 @@ namespace GUI
                 {
                     string selectedRoom = AvailableRooms.SelectedItem.ToString();
 
-                    List<ChatRoom> chatRoomsList = DataServer.ChatRoomsList;
+                    List<ChatRoom> chatRoomsList = foob.GetChatRooms(NBox.Text);
 
                     if (chatRoomsList != null)
                     {
@@ -169,6 +169,7 @@ namespace GUI
                         {
                             MessageBox.Show("You are already a participant in a different room, Please leave the current room if you want to join this one", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
+
                         else
                         {
                             chatRoomsList = foob.JoinChatRoom(selectedRoom, username, chatRoomsList);
