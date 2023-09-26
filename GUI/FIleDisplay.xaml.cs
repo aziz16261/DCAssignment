@@ -31,22 +31,15 @@ namespace GUI
 
         public void setChatRoom(ChatRoom userRoom)
         {
-            currentChatRoom = userRoom;
-            string listonames = "";
-            foreach (FileStore file in currentChatRoom.Files)
-            {
-                fileNamesList.Add(file.fileName);
-            }
-
-            foreach (string name in fileNamesList)
-            {
-                listonames += name + "\n";
-            }
-
-            TextFileDisplay.Text = listonames;
             FileSelectionBox.ItemsSource = null;
-            FileSelectionBox.ItemsSource = fileNamesList;
+            FileSelectionBox.ItemsSource = userRoom.Files;
         }
 
+        private void FileSelectionBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string selectedFile = FileSelectionBox.SelectedItem.ToString();
+
+            byte[] fileData = File.ReadAllBytes("localhost\\" + selectedFile);
+        }
     }
 }

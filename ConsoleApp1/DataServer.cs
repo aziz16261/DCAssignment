@@ -11,6 +11,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.ServiceModel.Dispatcher;
+using System.Runtime.InteropServices;
 
 namespace Console1
 {
@@ -178,7 +179,13 @@ namespace Console1
 
         public List<ChatRoom> GetChatRooms(string username)
         {
-            return ChatRoomsList.Where(room => room.Participants.Contains(username) || !room.IsPrivate).ToList();
+            try { 
+                return ChatRoomsList.Where(room => room.Participants.Contains(username) || !room.IsPrivate).ToList();
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
         }
 
         public List<ChatRoom> GetChatRoomss()
@@ -255,14 +262,13 @@ namespace Console1
         /// <summary>
         /// This code below is for handling the file sharing, it doesn't work just yet, probably needs the buttons to be on seperate threads
         /// </summary>
-        public string UploadFile(string filePath, string currentChatroom)
+        public string UploadFile(string filePath, byte[] fileData, string currentChatroom)
         {
             Console.WriteLine("Started upload process");
-            byte[] fileData = File.ReadAllBytes(filePath);
             string fileName = Path.GetFileName(filePath);
-            
-            FileStore newFile = new FileStore(fileName, fileData);
-            GetChatRoom(currentChatroom, ChatRoomsList).Files.Add(newFile);
+            File.WriteAllBytes("localhost\\" + fileName, fileData);
+
+            GetChatRoom(currentChatroom, ChatRoomsList).Files.Add(fileName);
             Console.WriteLine("Successfully added file " + fileName);
             return fileName;
         }

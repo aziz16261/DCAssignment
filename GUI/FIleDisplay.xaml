@@ -13,7 +13,7 @@
 
         <Image x:Name="ImageFileDisplay" HorizontalAlignment="Left" Height="428" Margin="108,0,0,0" VerticalAlignment="Top" Width="334"/>
 
-        <ListBox x:Name="FileSelectionBox" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,342,310"/>
+        <ListBox x:Name="FileSelectionBox" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,342,310" SelectionChanged="FileSelectionBox_SelectionChanged"/>
         <Button x:Name="CloseFileButton" Content="Close File" HorizontalAlignment="Left" Height="41" Margin="8,129,0,0" VerticalAlignment="Top" Width="92"/>
 
 

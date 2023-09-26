@@ -43,6 +43,8 @@ namespace GUI
 
             ChannelFactory<DataServerInterface> foobFactory;
             NetTcpBinding tcp = new NetTcpBinding();
+            tcp.TransferMode = TransferMode.Streamed;
+
             tcp.OpenTimeout = new TimeSpan(0, 20, 0);
             tcp.CloseTimeout = new TimeSpan(0, 20, 0);
             tcp.SendTimeout = new TimeSpan(0, 20, 0);
@@ -308,14 +310,17 @@ namespace GUI
                 dialog.Title = "Select file to upload";
                 dialog.ShowDialog();
 
-                string uploadedFile = dialog.FileName;
+                string filePath = dialog.FileName;
                 string username = NBox.Text;
                 string userCurrentRoom = chatroom_name_Block.Text;
+                byte[] fileData = File.ReadAllBytes(filePath);
 
-                MessageTextBox.Text = foob.UploadFile(uploadedFile, userCurrentRoom);
+                MessageTextBox.Text = username + ": sent file " + foob.UploadFile(filePath, fileData, userCurrentRoom);
+                foob.SendMessage(username, userCurrentRoom, MessageTextBox.Text, foob.GetChatRoomss());
             }
         }
 
+        
         private void FileTransferSendButton_Click(object sender, RoutedEventArgs e)
         {
             FileDisplay fileWindow = new FileDisplay();
@@ -329,10 +334,10 @@ namespace GUI
                 {
                     int count = userCurrentRoom.Files.Count;
                     listonames = count.ToString();
-                    foreach (FileStore file in userCurrentRoom.Files)
+                    foreach (string file in userCurrentRoom.Files)
                     {
 
-                        listonames += file.fileName + "\n";
+                        listonames += file + "\n";
                     }
 
                     fileWindow.setChatRoom(userCurrentRoom);
@@ -340,6 +345,7 @@ namespace GUI
                 }
             }
         }
+        
 
         /*    private void RefreshChatRoomsAndMessages()
             {
@@ -469,19 +475,27 @@ namespace GUI
                 username = NBox.Text;
             });
 
-            if (!string.IsNullOrEmpty(username))
+            try
             {
-                List<ChatRoom> chatRoomsList = await Task.Run(() => foob.GetChatRooms(username));
-
-                if (chatRoomsList != null)
+                if (!string.IsNullOrEmpty(username))
                 {
-                    Dispatcher.Invoke(() =>
+                    List<ChatRoom> chatRoomsList = await Task.Run(() => foob.GetChatRooms(username));
+
+                    if (chatRoomsList != null)
                     {
-                        AvailableRooms.ItemsSource = null;
-                        AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
-                    });
+                        Dispatcher.Invoke(() =>
+                        {
+                            AvailableRooms.ItemsSource = null;
+                            AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
+                        });
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            
         }
     }
 }

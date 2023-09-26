@@ -20,7 +20,7 @@ namespace DatabaseLib
         [DataMember]
         public List<Message> Messages { get; set; }
         [DataMember]
-        public List<FileStore> Files { get; set; }
+        public List<string> Files { get; set; }
         [DataMember]
         public bool IsPrivate { get; set; }
 
@@ -29,7 +29,7 @@ namespace DatabaseLib
             RoomName = roomName;
             Participants = new List<string>();
             Messages = new List<Message>();
-            Files = new List<FileStore>();
+            Files = new List<string>();
             PrivateMessages = new List<PrivateMessage>();
             IsPrivate = false;
         }
