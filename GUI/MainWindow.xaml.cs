@@ -33,7 +33,6 @@ namespace GUI
     public partial class MainWindow : Window
     {
         private DataServerInterface foob;
-        //  private DispatcherTimer refreshTimer;
 
         public MainWindow()
         {
@@ -54,13 +53,9 @@ namespace GUI
 
             AvailableRooms.ItemsSource = foob.CreateInitialChatRooms(new List<ChatRoom>()).Select(room => room.RoomName);
 
-            //  refreshTimer = new DispatcherTimer();
-            //  refreshTimer.Interval = TimeSpan.FromSeconds(4); 
-            //  refreshTimer.Tick += RefreshTimer_Tick;
-            //   refreshTimer.Start();
-
             Task.Run(() => StartUpdatingChatRooms());
-
+            Task.Run(() => StartUpdatingChatRoomParticipants());
+            Task.Run(() => StartUpdatingChatRoomMessages());
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -315,7 +310,7 @@ namespace GUI
                 MessageTextBox.Text = foob.UploadFile(uploadedFile, userCurrentRoom);
             }
         }
-
+       
         private void FileTransferSendButton_Click(object sender, RoutedEventArgs e)
         {
             FileDisplay fileWindow = new FileDisplay();
@@ -340,36 +335,6 @@ namespace GUI
                 }
             }
         }
-
-        /*    private void RefreshChatRoomsAndMessages()
-            {
-                List<ChatRoom> chatRoomsList = foob.GetChatRooms(NBox.Text);
-
-                if (chatRoomsList != null)
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
-
-                       string chatRoomName = chatroom_name_Block.Text;
-                       ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == chatRoomName);
-
-                        if (selectedChatRoom != null)
-                        {
-                            chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
-
-                            currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
-
-                            AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
-                        }
-                    });
-                }
-            }
-
-            private void RefreshTimer_Tick(object sender, EventArgs e)
-            {
-                RefreshChatRoomsAndMessages();
-            } */
 
         private void PrivateMessage_click(object sender, RoutedEventArgs e)
         {
@@ -483,5 +448,80 @@ namespace GUI
                 }
             }
         }
+       private async void StartUpdatingChatRoomParticipants()
+        {
+            while (true)
+            {
+                await UpdateChatRoomParticipantsAsync();
+                await Task.Delay(TimeSpan.FromSeconds(6));
+            }
+        }
+
+        private async Task UpdateChatRoomParticipantsAsync()
+        {
+            string username = null;
+            string selectedRoom = null;
+            Dispatcher.Invoke(() =>
+            {
+                username = NBox.Text;
+                selectedRoom = chatroom_name_Block.Text;
+            });
+            if (!string.IsNullOrEmpty(username))
+            {
+                List<ChatRoom> chatRoomsList = await Task.Run(() => foob.GetChatRooms(username));
+
+                if (chatRoomsList != null)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == selectedRoom);
+                        if (selectedChatRoom != null)
+                        {
+                            currentRoomParticipants.ItemsSource = null;
+                            currentRoomParticipants.ItemsSource = selectedChatRoom.Participants;
+                        }
+                    });
+                }
+            }
+        }
+
+        private async void StartUpdatingChatRoomMessages()
+        {
+            while (true)
+            {
+                await UpdateChatRoomMessagesAsync();
+                await Task.Delay(TimeSpan.FromSeconds(7));
+            }
+        }
+        private async Task UpdateChatRoomMessagesAsync()
+        {
+            string username = null;
+            string selectedRoom = null;
+
+            Dispatcher.Invoke(() =>
+            {
+                username = NBox.Text;
+                selectedRoom = chatroom_name_Block.Text;
+            });
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                List<ChatRoom> chatRoomsList = await Task.Run(() => foob.GetChatRooms(username));
+
+                if (chatRoomsList != null)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        ChatRoom selectedChatRoom = chatRoomsList.FirstOrDefault(room => room.RoomName == selectedRoom);
+                        if (selectedChatRoom != null)
+                        {
+                            chatBox.Text = string.Join(Environment.NewLine, selectedChatRoom.Messages.Select(msg => $"{msg.Sender}: {msg.Content}"));
+                        }
+                    });
+                }
+            }
+        }
+
+
     }
 }
