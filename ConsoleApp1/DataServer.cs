@@ -266,7 +266,7 @@ namespace Console1
         {
             Console.WriteLine("Started upload process");
             string fileName = Path.GetFileName(filePath);
-            File.WriteAllBytes("localhost\\" + fileName, fileData);
+            File.WriteAllBytes(fileName, fileData);
 
             GetChatRoom(currentChatroom, ChatRoomsList).Files.Add(fileName);
             Console.WriteLine("Successfully added file " + fileName);

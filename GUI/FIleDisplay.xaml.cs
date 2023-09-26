@@ -39,7 +39,7 @@ namespace GUI
         {
             string selectedFile = FileSelectionBox.SelectedItem.ToString();
 
-            byte[] fileData = File.ReadAllBytes("localhost\\" + selectedFile);
+            byte[] fileData = File.ReadAllBytes(selectedFile);
         }
     }
 }
