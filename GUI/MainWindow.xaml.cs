@@ -165,11 +165,10 @@ namespace GUI
                     {
                         ChatRoom userCurrentRoom = chatRoomsList.FirstOrDefault(room => room.Participants.Contains(username));
 
-                        if (userCurrentRoom != null)
+                        if (userCurrentRoom != null && !userCurrentRoom.IsPrivate)
                         {
                             MessageBox.Show("You are already a participant in a different room, Please leave the current room if you want to join this one", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
-
                         else
                         {
                             chatRoomsList = foob.JoinChatRoom(selectedRoom, username, chatRoomsList);
