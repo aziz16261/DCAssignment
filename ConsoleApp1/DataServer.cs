@@ -134,7 +134,7 @@ namespace Console1
                 {
                     ChatRoom newChatRoom = new ChatRoom(roomName);
                     DataServer.ChatRoomsList.Add(newChatRoom);
-                    Console.WriteLine("added intial chatroom: " + newChatRoom);
+                    Console.WriteLine("added intial chatroom: " + roomName);
                 }
             }
 
