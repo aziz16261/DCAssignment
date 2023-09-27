@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="FileDisplay" Height="450" Width="450">
     <Grid>
-        <TextBox x:Name="TextFileDisplay" Text="" HorizontalAlignment="Right" Width="342"/>
+        <TextBox x:Name="TextFileDisplay" Text="" TextWrapping="Wrap" HorizontalAlignment="Right" Width="342"/>
 
 
 

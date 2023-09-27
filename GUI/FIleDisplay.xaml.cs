@@ -42,6 +42,9 @@ namespace GUI
         {
             string selectedFile = FileSelectionBox.SelectedItem.ToString();
 
+            TextFileDisplay.Text = "";
+            ImageFileDisplay.Source = null;
+
             if (Path.GetExtension(selectedFile) == ".txt")
             {
                 TextFileDisplay.Text = File.ReadAllText("..\\..\\..\\ConsoleApp1\\bin\\Debug\\" + selectedFile);
