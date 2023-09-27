@@ -40,8 +40,8 @@
         </ListView>
         <ListBox x:Name="AvailableRooms" HorizontalAlignment="Left" Height="184" Margin="12,222,0,0" VerticalAlignment="Top" Width="174" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="ListBox_SelectionChanged"/>
         <Button x:Name="LeaveChatRoom" Content="Leave Chat Room" HorizontalAlignment="Left" Margin="573,10,0,0" VerticalAlignment="Top" Height="59" Width="106" Click="LeaveChatRoom_Click"/>
-        <Button x:Name="FileTransfer" Content="File Upload Test" HorizontalAlignment="Left" Height="23" Margin="684,291,0,0" VerticalAlignment="Top" Width="101" Click="FileTransfer_Click"/>
-        <Button x:Name="FileTransferSendButton" Content="File upload send" HorizontalAlignment="Left" Height="39" Margin="684,319,0,0" VerticalAlignment="Top" Width="101" Click="FileTransferSendButton_Click"/>
+        <Button x:Name="FileTransfer" Content="Upload File" HorizontalAlignment="Left" Height="23" Margin="684,291,0,0" VerticalAlignment="Top" Width="101" Click="FileTransfer_Click"/>
+        <Button x:Name="FileTransferSendButton" Content="Room Files" HorizontalAlignment="Left" Height="39" Margin="684,319,0,0" VerticalAlignment="Top" Width="101" Click="FileTransferSendButton_Click"/>
         <Button x:Name="RefreshButton" Content="Refresh" HorizontalAlignment="Left" Margin="684,10,0,0" VerticalAlignment="Top" Height="59" Width="106" Click="RefreshButton_Click"/>
         <Button x:Name="PrivateMessageButton" Content="PrivateMessage" HorizontalAlignment="Left" Margin="462,10,0,0" VerticalAlignment="Top" Height="58" Width="106" Click="PrivateMessage_click" RenderTransformOrigin="0.877,0.488"/>
         <TextBox x:Name="PMRecieverName" HorizontalAlignment="Left" Margin="324,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="133" Height="25"/>
