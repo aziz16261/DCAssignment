@@ -55,7 +55,6 @@ namespace Console1
         [FaultContract(typeof(ServerException))]
          List<ChatRoom> GetChatRoomss();
 
-
         [OperationContract]
         [FaultContract(typeof(ServerException))]
         ChatRoom GetChatRoom(string roomName, List<ChatRoom> chatRoomsList);

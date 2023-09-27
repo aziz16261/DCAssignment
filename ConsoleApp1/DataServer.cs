@@ -19,7 +19,6 @@ namespace Console1
     public class DataServer : DataServerInterface
     {
         public static List<ChatRoom> ChatRoomsList { get; private set; } = new List<ChatRoom>();
-        public event Action<List<ChatRoom>> ChatRoomsUpdated;
         public static List<Username> UsernamesList { get; private set; } = new List<Username>();
 
         public bool CheckAccount(string username)
@@ -71,9 +70,6 @@ namespace Console1
             {
                 Console.WriteLine("Chat room with the same name already exists: " + roomName);
             }
-
-            ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
-
             return DataServer.ChatRoomsList;
         }
 
@@ -95,8 +91,6 @@ namespace Console1
                 {
                     Console.WriteLine("Participant already exists " + username);
                 }
-
-                ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
             }
             else
             {
@@ -138,9 +132,6 @@ namespace Console1
                     Console.WriteLine("added intial chatroom: " + roomName);
                 }
             }
-
-            ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
-
             return ChatRoomsList;
         }
 
@@ -160,8 +151,6 @@ namespace Console1
 
                     Console.WriteLine("Sender: " + sender + "\nMessage: " + message);
                     chatRoom.Messages.Add(newMessage);
-
-                    ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
                 }
                 else
                 {
@@ -231,7 +220,6 @@ namespace Console1
 
                 privateChatRoom.Messages.Add(newMessage);
                 Console.WriteLine(sender + " " + newMessage);
-                ChatRoomsUpdated?.Invoke(ChatRoomsList);
             }
         }
 
@@ -253,14 +241,10 @@ namespace Console1
                 Console.WriteLine("Added " + sender + ", " + receiver + " to the private room " + privateRoomName);
             }
 
-            ChatRoomsUpdated?.Invoke(ChatRoomsList);
-
             return ChatRoomsList;
         }
 
-        /// <summary>
-        /// This code below is for handling the file sharing, it doesn't work just yet, probably needs the buttons to be on seperate threads
-        /// </summary>
+ 
         public string UploadFile(string filePath, byte[] fileData, string currentChatroom)
         {
             Console.WriteLine("Started upload process");

@@ -23,11 +23,6 @@ namespace ConsoleApp1
             tcp.MaxReceivedMessageSize = Int32.MaxValue;
             tcp.ReaderQuotas.MaxArrayLength = Int32.MaxValue;
 
-            tcp.OpenTimeout = new TimeSpan(0, 20, 0);
-            tcp.CloseTimeout = new TimeSpan(0, 20, 0);
-            tcp.SendTimeout = new TimeSpan(0, 20, 0);
-            tcp.ReceiveTimeout = new TimeSpan(0, 20, 0);
-
             //Bind server to the implementation of DataServer
             host = new ServiceHost(typeof(DataServer));
             //Present the publicly accessible interface to the client. 0.0.0.0 tells .net to

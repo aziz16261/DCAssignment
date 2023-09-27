@@ -39,15 +39,9 @@ namespace GUI
             InitializeComponent();
             DataContext = this;
 
-
             ChannelFactory<DataServerInterface> foobFactory;
             NetTcpBinding tcp = new NetTcpBinding();
             tcp.TransferMode = TransferMode.Streamed;
-
-            tcp.OpenTimeout = new TimeSpan(0, 20, 0);
-            tcp.CloseTimeout = new TimeSpan(0, 20, 0);
-            tcp.SendTimeout = new TimeSpan(0, 20, 0);
-            tcp.ReceiveTimeout = new TimeSpan(0, 20, 0);
 
             string URL = "net.tcp://localhost:8100/ChatServer";
             foobFactory = new ChannelFactory<DataServerInterface>(tcp, URL);
@@ -87,25 +81,37 @@ namespace GUI
         private void LogoutButton_Click_1(object sender, RoutedEventArgs e)
         {
             string username = NBox.Text;
-
             bool usernameExists = foob.CheckAccount(username);
 
             if (usernameExists)
             {
-                foob.RemoveAccount(username);
+                List<ChatRoom> chatRoomsList = foob.GetChatRooms(username);
+                bool isParticipantInChatRoom = chatRoomsList.Any(room => room.Participants.Contains(username));
 
-                Username.Text = ("You have been logged out: " + username);
-                NBox.Text = ("Enter a unique username to log in again.");
-                LoginButton.IsEnabled = true;
-                NBox.IsEnabled = true;
+                if (isParticipantInChatRoom)
+                {
+                    MessageBox.Show("You cannot log out while you are in a chat room, Please leave the chat room first", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else
+                {
+                    foob.RemoveAccount(username);
+                    Username.Text = "You have been logged out: " + username;
+                    NBox.Text = "Enter a unique username to log in again";
+                    LoginButton.IsEnabled = true;
+                    NBox.IsEnabled = true;
 
+                    AvailableRooms.ItemsSource = null;
+                    chatBox.Text = string.Empty;
+                    currentRoomParticipants.ItemsSource = null;
+                    chatroom_name_Block.Text = string.Empty;
+                }
             }
-
             else
             {
                 MessageBox.Show("User is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -150,10 +156,7 @@ namespace GUI
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string username = null;
-            Dispatcher.Invoke(() =>
-            {
-                username = NBox.Text;
-            });
+            username = NBox.Text;
 
             if (!string.IsNullOrEmpty(username))
             {
@@ -198,11 +201,8 @@ namespace GUI
             }
             else
             {
-                Dispatcher.Invoke(() =>
-                {
                     AvailableRooms.SelectedIndex = -1;
                     MessageBox.Show("Failed, user is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                });
             }
         }
 
@@ -289,7 +289,7 @@ namespace GUI
         }
 
         /// <summary>
-        /// This code below is for handling the file sharing, it doesn't work just yet, probably needs the buttons to be on seperate threads
+        /// This code below is for handling the file sharing
         /// </summary>
 
         private void FileTransfer_Click(object sender, RoutedEventArgs e)
@@ -386,7 +386,7 @@ namespace GUI
             {
                 if (string.IsNullOrWhiteSpace(receiverUsername))
                 {
-                    MessageBox.Show("Please enter a recipient's username.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Please enter a recipient's username", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -399,7 +399,7 @@ namespace GUI
                 bool receiverExists = foob.CheckAccount(receiverUsername);
                 if (!receiverExists)
                 {
-                    MessageBox.Show("Recipient's username does not exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Recipient's username does not exist", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -418,12 +418,7 @@ namespace GUI
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             string senderUsername = null;
-
-            Dispatcher.Invoke(() =>
-            {
-                senderUsername = NBox.Text;
-            });
-
+            senderUsername = NBox.Text;
             List<ChatRoom> chatRoomsList = foob.GetChatRooms(senderUsername);
 
             bool usernameExists = foob.CheckAccount(senderUsername);
@@ -454,12 +449,12 @@ namespace GUI
 
 
 
-        private async void StartUpdatingChatRooms()
+        private async Task StartUpdatingChatRooms()
         {
             while (true)
             {
                 await UpdateChatRoomsAsync();
-                await Task.Delay(TimeSpan.FromSeconds(5)); 
+                await Task.Delay(TimeSpan.FromSeconds(5));
             }
         }
 
@@ -494,14 +489,15 @@ namespace GUI
             }
             
         }
-       private async void StartUpdatingChatRoomParticipants()
+        private async Task StartUpdatingChatRoomParticipants()
         {
             while (true)
             {
                 await UpdateChatRoomParticipantsAsync();
-                await Task.Delay(TimeSpan.FromSeconds(6));
+                await Task.Delay(TimeSpan.FromSeconds(5));
             }
         }
+
 
         private async Task UpdateChatRoomParticipantsAsync()
         {
@@ -531,12 +527,12 @@ namespace GUI
             }
         }
 
-        private async void StartUpdatingChatRoomMessages()
-        {
+       private async Task StartUpdatingChatRoomMessages()
+            {
             while (true)
             {
                 await UpdateChatRoomMessagesAsync();
-                await Task.Delay(TimeSpan.FromSeconds(7));
+                await Task.Delay(TimeSpan.FromSeconds(5));
             }
         }
         private async Task UpdateChatRoomMessagesAsync()
@@ -567,7 +563,6 @@ namespace GUI
                 }
             }
         }
-
 
     }
 }
