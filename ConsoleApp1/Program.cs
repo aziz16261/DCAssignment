@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,6 +19,9 @@ namespace ConsoleApp1
             ServiceHost host;
             //This represents a tcp/ip binding in the Windows network stack
             NetTcpBinding tcp = new NetTcpBinding();
+            tcp.TransferMode = TransferMode.Streamed;
+            tcp.MaxReceivedMessageSize = Int32.MaxValue;
+            tcp.ReaderQuotas.MaxArrayLength = Int32.MaxValue;
 
             tcp.OpenTimeout = new TimeSpan(0, 20, 0);
             tcp.CloseTimeout = new TimeSpan(0, 20, 0);

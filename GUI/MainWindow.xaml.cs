@@ -42,6 +42,8 @@ namespace GUI
 
             ChannelFactory<DataServerInterface> foobFactory;
             NetTcpBinding tcp = new NetTcpBinding();
+            tcp.TransferMode = TransferMode.Streamed;
+
             tcp.OpenTimeout = new TimeSpan(0, 20, 0);
             tcp.CloseTimeout = new TimeSpan(0, 20, 0);
             tcp.SendTimeout = new TimeSpan(0, 20, 0);
@@ -293,48 +295,84 @@ namespace GUI
         private void FileTransfer_Click(object sender, RoutedEventArgs e)
         {
             bool usernameExists = foob.CheckAccount(NBox.Text);
+            List<ChatRoom> chatRoomsList = foob.GetChatRooms(NBox.Text);
 
             if (usernameExists)
             {
-                OpenFileDialog dialog = new OpenFileDialog();
-                dialog.Filter = "txt files |*.txt|Image files|*.jpg;*.jpeg;*.png;*.bmp";
-                dialog.CheckFileExists = true;
-                dialog.CheckPathExists = true;
-                dialog.Title = "Select file to upload";
-                dialog.ShowDialog();
+                ChatRoom userChatRoom = chatRoomsList.FirstOrDefault(room => room.Participants.Contains(NBox.Text));
 
-                string uploadedFile = dialog.FileName;
-                string username = NBox.Text;
-                string userCurrentRoom = chatroom_name_Block.Text;
+                if (userChatRoom != null) { 
+                    OpenFileDialog dialog = new OpenFileDialog();
+                    dialog.Filter = "txt files |*.txt|Image files|*.jpg;*.jpeg;*.png;*.bmp";
+                    dialog.CheckFileExists = true;
+                    dialog.CheckPathExists = true;
+                    dialog.Title = "Select file to upload";
+                    dialog.ShowDialog();
 
-                MessageTextBox.Text = foob.UploadFile(uploadedFile, userCurrentRoom);
+                    string filePath = dialog.FileName;
+                    string username = NBox.Text;
+                    string userCurrentRoom = chatroom_name_Block.Text;
+                    if (filePath != "") { 
+                        try { 
+                            byte[] fileData = File.ReadAllBytes(filePath);
+
+                            MessageTextBox.Text = username + ": sent file " + foob.UploadFile(filePath, fileData, userCurrentRoom);
+                            foob.SendMessage(username, userCurrentRoom, MessageTextBox.Text, foob.GetChatRoomss());
+                            MessageTextBox.Text = "";
+                        } catch (IOException exc)
+                        {
+                            MessageBox.Show("File transfer failed due to " +  exc.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                } 
+                else{
+                    MessageBox.Show("You are not in a chat room", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("User is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-       
+        
         private void FileTransferSendButton_Click(object sender, RoutedEventArgs e)
         {
             FileDisplay fileWindow = new FileDisplay();
             string username = NBox.Text;
             string listonames = "";
-            ChatRoom userCurrentRoom = foob.GetChatRoom(chatroom_name_Block.Text, foob.GetChatRooms(username));
-            if (userCurrentRoom != null)
+
+            bool usernameExists = foob.CheckAccount(NBox.Text);
+            if (usernameExists)
             {
-
-                if (userCurrentRoom.Files != null)
+                ChatRoom userCurrentRoom = foob.GetChatRoom(chatroom_name_Block.Text, foob.GetChatRooms(username));
+                if (userCurrentRoom != null)
                 {
-                    int count = userCurrentRoom.Files.Count;
-                    listonames = count.ToString();
-                    foreach (FileStore file in userCurrentRoom.Files)
+
+                    if (userCurrentRoom.Files != null)
                     {
+                        int count = userCurrentRoom.Files.Count;
+                        listonames = count.ToString();
+                        foreach (string file in userCurrentRoom.Files)
+                        {
 
-                        listonames += file.fileName + "\n";
+                            listonames += file + "\n";
+                        }
+
+                        fileWindow.setChatRoom(userCurrentRoom);
+                        fileWindow.Show();
                     }
-
-                    fileWindow.setChatRoom(userCurrentRoom);
-                    fileWindow.Show();
+                }
+                else
+                {
+                    MessageBox.Show("You are not in a chat room", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-        }
+            else
+            {
+                MessageBox.Show("User is not logged in", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+}
+        
 
         private void PrivateMessage_click(object sender, RoutedEventArgs e)
         {
@@ -434,19 +472,27 @@ namespace GUI
                 username = NBox.Text;
             });
 
-            if (!string.IsNullOrEmpty(username))
+            try
             {
-                List<ChatRoom> chatRoomsList = await Task.Run(() => foob.GetChatRooms(username));
-
-                if (chatRoomsList != null)
+                if (!string.IsNullOrEmpty(username))
                 {
-                    Dispatcher.Invoke(() =>
+                    List<ChatRoom> chatRoomsList = await Task.Run(() => foob.GetChatRooms(username));
+
+                    if (chatRoomsList != null)
                     {
-                        AvailableRooms.ItemsSource = null;
-                        AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
-                    });
+                        Dispatcher.Invoke(() =>
+                        {
+                            AvailableRooms.ItemsSource = null;
+                            AvailableRooms.ItemsSource = chatRoomsList.Select(room => room.RoomName);
+                        });
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            
         }
        private async void StartUpdatingChatRoomParticipants()
         {

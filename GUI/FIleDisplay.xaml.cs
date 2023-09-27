@@ -2,6 +2,7 @@
 using DatabaseLib;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,11 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace GUI
 {
@@ -31,22 +34,24 @@ namespace GUI
 
         public void setChatRoom(ChatRoom userRoom)
         {
-            currentChatRoom = userRoom;
-            string listonames = "";
-            foreach (FileStore file in currentChatRoom.Files)
-            {
-                fileNamesList.Add(file.fileName);
-            }
-
-            foreach (string name in fileNamesList)
-            {
-                listonames += name + "\n";
-            }
-
-            TextFileDisplay.Text = listonames;
             FileSelectionBox.ItemsSource = null;
-            FileSelectionBox.ItemsSource = fileNamesList;
+            FileSelectionBox.ItemsSource = userRoom.Files;
         }
 
+        private void FileSelectionBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string selectedFile = FileSelectionBox.SelectedItem.ToString();
+
+            if (Path.GetExtension(selectedFile) == ".txt")
+            {
+                TextFileDisplay.Text = File.ReadAllText("..\\..\\..\\ConsoleApp1\\bin\\Debug\\" + selectedFile);
+            } else
+            {
+                string filePath = "..\\..\\..\\ConsoleApp1\\bin\\Debug\\" + selectedFile;
+                Bitmap image = new Bitmap(filePath);
+                var imageHandle = image.GetHbitmap();
+                ImageFileDisplay.Source = Imaging.CreateBitmapSourceFromHBitmap(imageHandle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            }
+        }
     }
 }
