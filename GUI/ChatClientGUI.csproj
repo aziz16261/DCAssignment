@@ -104,13 +104,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Assignment\DatabaseLib.csproj">
+    <ProjectReference Include="..\Assignment\ChatDataBase.csproj">
       <Project>{87638dd6-3aec-4daf-9582-c7ae3badb7c4}</Project>
-      <Name>DatabaseLib</Name>
+      <Name>ChatDataBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ConsoleApp1\ConsoleApp1.csproj">
+    <ProjectReference Include="..\ConsoleApp1\ChatServer.csproj">
       <Project>{675B55AD-D64E-48EB-A4B7-6C37DCC3549B}</Project>
-      <Name>ConsoleApp1</Name>
+      <Name>ChatServer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

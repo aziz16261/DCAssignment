@@ -54,9 +54,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Assignment\DatabaseLib.csproj">
+    <ProjectReference Include="..\Assignment\ChatDataBase.csproj">
       <Project>{87638DD6-3AEC-4DAF-9582-C7AE3BADB7C4}</Project>
-      <Name>DatabaseLib</Name>
+      <Name>ChatDataBase</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
