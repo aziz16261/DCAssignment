@@ -120,8 +120,6 @@ namespace Console1
                 {
                     Console.WriteLine("Participant is not in chat room: " + username);
                 }
-
-                ChatRoomsUpdated?.Invoke(DataServer.ChatRoomsList);
             }
 
             return ChatRoomsList.Where(room => room.Participants.Contains(username) || !room.IsPrivate).ToList();
@@ -137,6 +135,7 @@ namespace Console1
                 {
                     ChatRoom newChatRoom = new ChatRoom(roomName);
                     DataServer.ChatRoomsList.Add(newChatRoom);
+                    Console.WriteLine("added intial chatroom: " + roomName);
                 }
             }
 
