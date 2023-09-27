@@ -317,6 +317,7 @@ namespace GUI
 
                 MessageTextBox.Text = username + ": sent file " + foob.UploadFile(filePath, fileData, userCurrentRoom);
                 foob.SendMessage(username, userCurrentRoom, MessageTextBox.Text, foob.GetChatRoomss());
+                MessageTextBox.Text = "";
             }
         }
 

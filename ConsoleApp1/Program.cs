@@ -21,6 +21,7 @@ namespace ConsoleApp1
             NetTcpBinding tcp = new NetTcpBinding();
             tcp.TransferMode = TransferMode.Streamed;
             tcp.MaxReceivedMessageSize = Int32.MaxValue;
+            tcp.ReaderQuotas.MaxArrayLength = Int32.MaxValue;
 
             tcp.OpenTimeout = new TimeSpan(0, 20, 0);
             tcp.CloseTimeout = new TimeSpan(0, 20, 0);
