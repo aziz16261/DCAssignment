@@ -7,14 +7,13 @@
         mc:Ignorable="d"
         Title="FileDisplay" Height="450" Width="450">
     <Grid>
-        <TextBox x:Name="TextFileDisplay" Margin="108,0,0,0" Text=""/>
+        <TextBox x:Name="TextFileDisplay" Text="" HorizontalAlignment="Right" Width="342"/>
 
 
 
-        <Image x:Name="ImageFileDisplay" HorizontalAlignment="Left" Height="428" Margin="108,0,0,0" VerticalAlignment="Top" Width="334"/>
+        <Image x:Name="ImageFileDisplay" HorizontalAlignment="Right" Height="428" VerticalAlignment="Top" Width="334"/>
 
-        <ListBox x:Name="FileSelectionBox" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,342,310" SelectionChanged="FileSelectionBox_SelectionChanged"/>
-        <Button x:Name="CloseFileButton" Content="Close File" HorizontalAlignment="Left" Height="41" Margin="8,129,0,0" VerticalAlignment="Top" Width="92"/>
+        <ListBox x:Name="FileSelectionBox" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="FileSelectionBox_SelectionChanged" HorizontalAlignment="Left" Width="108"/>
 
 
     </Grid>
